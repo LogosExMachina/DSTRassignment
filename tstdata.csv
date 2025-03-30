@@ -1,0 +1,5 @@
+Integer,Double,Float,String,Boolean
+1,  2.345,      3.3,    Hello,      False
+4,  5.8972,     6.7,    World,      True
+7,  8.6728,     9.1,    Goodbye,    true
+10, 6.1257,    12.2,    World,      false
