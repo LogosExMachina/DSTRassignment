@@ -1,7 +1,8 @@
 #include "csvParser.h"
+#include "strUtils.h"
 
 int main(int argc, char** argv) {
-    
+
     CSVParser parser;
     ColumnType colTypes[] = {
         ColumnType::INT, 
@@ -12,7 +13,15 @@ int main(int argc, char** argv) {
     };
     int nCols = sizeof(colTypes)/sizeof(ColumnType);
 
-    DataTable table = parser.parseCSV("tstdata.csv", colTypes, nCols);
+    int stringLengths[] = {
+        -1,
+        -1,
+        -1,
+        16,
+        -1
+    };
+
+    DataTable table = parser.parseCSV("data/tstdata.csv", colTypes, stringLengths, nCols);
     
     if(!table.wasInitialized()) {
         std::cout << "Error when loading table from CSV" << std::endl;    
@@ -26,17 +35,19 @@ int main(int argc, char** argv) {
         colNames[i].c_str() << std::endl;
 
     table.print();
+    
+    for(int i=0; i<table.getnRows(); i++) {
+        table.printRowBinary(i);
+    }
 
-    //table.printRowBinary(0);
-    //table.printRowBinary(1);
-    //table.printRowBinary(2);
-    //std::cout << "Value at [col=1;row=2] = " 
-    //    << table.getIntAt(1,2) << std::endl;
-    
-    //table.setIntAt(0,0,10);
-    //std::cout << "Value at [col=0;row=0] = " 
-    //    << table.getIntAt(0,0) << std::endl;
-    
+
+    bool saveSuccess = parser.saveCSV(std::string("data/newdata.csv"), table);
+    std::cout << (saveSuccess?
+    "> Data successfully serialized" :
+    "> Error when serializing data...") 
+    << std::endl;
+
+
     return 0;
 }
 

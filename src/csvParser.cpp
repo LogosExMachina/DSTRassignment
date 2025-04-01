@@ -3,14 +3,17 @@
 CSVParser::CSVParser() {}
 CSVParser::~CSVParser() {}
 
-DataTable CSVParser::parseCSV(std::string filePath, ColumnType colTypes[], int nColTypes) {
-
+// Loads the contents of a csv file at 'filePath', 
+// returns a DataTable containing its deserialized representation.
+DataTable CSVParser::parseCSV(std::string filePath, ColumnType colTypes[], int stringLengths[], int nColTypes) {
+    
     DataTable output;
 
     // Open the file handle
     std::ifstream fileHandle(filePath);
 
     if(!fileHandle.is_open()) {
+        // Replace this by some error code thingy...
         std::cerr << "Error opening the file!";
         return output;
     }
@@ -32,10 +35,13 @@ DataTable CSVParser::parseCSV(std::string filePath, ColumnType colTypes[], int n
 
     // Error, differing amount of columns
     if(nCols != nColTypes) {
+        // Replace this by some error code thingy...
         std::cout << "Error, differing amount of columns!" << std::endl;
         return output;
     }
     
+    bool hasStrings = false;
+
     // Determine the byte size of each row
     int rowByteSize=0;
     for(int i=0;i<nCols;i++) {
@@ -50,12 +56,24 @@ DataTable CSVParser::parseCSV(std::string filePath, ColumnType colTypes[], int n
                 rowByteSize+=(int)sizeof(float);
                 break;
             case ColumnType::STRING: 
-                rowByteSize+=(int)sizeof(std::string);
+                hasStrings=true;
+                rowByteSize+=
+                    (NULL==stringLengths)? 
+                    0 : (int)stringLengths[i]; 
+                    //sizeof(std::string);
                 break;
             case ColumnType::BOOL: 
                 rowByteSize+=(int)sizeof(bool);
                 break;
             default: break;    
+        }
+    }
+
+    if(hasStrings) {
+        if(NULL==stringLengths) {
+            // Replace this by some error code thingy...
+            std::cout << "Invalid string lengths array!" << std::endl;
+            return output;
         }
     }
 
@@ -101,6 +119,18 @@ DataTable CSVParser::parseCSV(std::string filePath, ColumnType colTypes[], int n
         }
     }
 
+    // Assign the respective data to the output table
+
+    output.nCols=nCols;
+    output.nRows=nRows;
+    output.rowByteSize=rowByteSize;
+
+    output.stringLengths = new int[nCols];
+    memcpy(output.stringLengths, stringLengths, nCols*sizeof(int));
+
+    output.columnTypes = new ColumnType[nColTypes];
+    memcpy(output.columnTypes, colTypes, nColTypes*sizeof(ColumnType));
+
     // Reset the position (internal pointers of the 
     // file handle)
     fileHandle.clear();
@@ -121,7 +151,7 @@ DataTable CSVParser::parseCSV(std::string filePath, ColumnType colTypes[], int n
         std::cout << "> Row parse iteration" << std::endl;
 
         colCounter=0;
-        colOffsetBytes=0;
+        colOffsetBytes=0; 
         // Iterate through each character
         for(int c=0;c<row.size();c++) {
             if(
@@ -131,81 +161,101 @@ DataTable CSVParser::parseCSV(std::string filePath, ColumnType colTypes[], int n
                 // Make sure the last char is included
                 if(row.size()-1==c && ','!=row[c]) ssbuffer << row[c];
 
-                if(colCounter >= nCols) break;
+                // DEBUGGING, maybe do under verbose mode later
+                std::cout << "Buffer contents: " << 
+                ssbuffer.str() << std::endl;
 
-                //colContent = ssbuffer.str();
-                //unsigned char *conversionBuffer;
+                // Anything written in the csv after the number of 
+                // columns is ignored
+                if(colCounter >= nCols) break;
 
                 switch (colTypes[colCounter])
                 {
                 case ColumnType::INT: {
-                    //conversionBuffer = new unsigned char[sizeof(int)];
                     int parsedInt = std::stoi(ssbuffer.str());
+
+                    output.setIntAt(colCounter, rowCounter, parsedInt);
+
+                    /*
                     memcpy(
-                        output.dataBuffer + // Base position 
-                        (rowCounter*rowByteSize) + // Row offset
-                        (colOffsetBytes), // Column offset
-                        &parsedInt, sizeof(int));
+                        output.getColRowBufferPtr(colCounter, rowCounter),
+                        (unsigned char*)&parsedInt, 
+                        sizeof(int));
+                    */
+                    
+                    // DEBUGGING, maybe do under verbose mode later
                     std::cout << "Parsed int at [col=" << colCounter << ";row=" 
                     << rowCounter  << "] = "<< parsedInt << std::endl;
+
                     colOffsetBytes+=sizeof(int);
                 }
                 break;
                 case ColumnType::DOUBLE: {
-                    double parsedDouble = std::stod(ssbuffer.str());
-                    memcpy(
-                        output.dataBuffer + // Base position 
-                        (rowCounter*rowByteSize) + // Row offset
-                        (colOffsetBytes), // Column offset
-                        &parsedDouble, sizeof(double));
+                    double parsedDouble = (ssbuffer.str().empty())? 
+                        0 : std::stod(ssbuffer.str());
+
+                    output.setDoubleAt(colCounter, rowCounter, parsedDouble);
+
+                    // DEBUGGING, maybe do under verbose mode later
                     std::cout << "Parsed double at [col=" << colCounter << ";row=" 
                     << rowCounter  << "] = "<< parsedDouble << std::endl;
+
                     colOffsetBytes+=sizeof(double);
                 }
                 break;
                 case ColumnType::FLOAT: {  
                     float parsedFloat = std::stof(ssbuffer.str());
-                    memcpy(
-                        output.dataBuffer + // Base position 
-                        (rowCounter*rowByteSize) + // Row offset
-                        (colOffsetBytes), // Column offset
-                        &parsedFloat, sizeof(float));
+
+                    output.setFloatAt(colCounter, rowCounter, parsedFloat);
+
+                    // DEBUGGING, maybe do under verbose mode later
                     std::cout << "Parsed float at [col=" << colCounter << ";row=" 
                     << rowCounter  << "] = "<< parsedFloat << std::endl;
+                    
                     colOffsetBytes+=sizeof(float);
                 }
                 break;
                 case ColumnType::STRING: {
+                    // Error, cannot be a null-length string
+                    if(stringLengths[colCounter]<=0) {
+                        std::cout << "Invalid string length at col " << 
+                        colCounter << "!" << std::endl;
+                        break;
+                    }
+                    
                     std::string parsedString = ssbuffer.str();
-                    memcpy(
-                        output.dataBuffer + // Base position 
-                        (rowCounter*rowByteSize) + // Row offset
-                        (colOffsetBytes), // Column offset
-                        &parsedString, sizeof(std::string));
+                    trimLeadingInPlace_STL(parsedString);
+                    trimTrailingInPlace_STL(parsedString);
+                    const char* stringContents = parsedString.c_str();
+                    
+                    output.setStringAt(colCounter, rowCounter, stringContents);
+
+                    // DEBUGGING, maybe do under verbose mode later
                     std::cout << "Parsed string at [col=" << colCounter << ";row=" 
                     << rowCounter  << "] = "<< parsedString.c_str() << std::endl;
-                    colOffsetBytes+=sizeof(std::string);
+
+                    colOffsetBytes+=stringLengths[colCounter]; //sizeof(std::string);
                 }
                 break;
                 case ColumnType::BOOL: {
+
                     std::string content = ssbuffer.str();
-                    // Later on apply left and right trimming !!
+                    trimLeadingInPlace_STL(content);
+                    trimTrailingInPlace_STL(content);
+                    
                     bool parsedBool = content=="True" || content=="true";
-                    memcpy(
-                        output.dataBuffer + // Base position 
-                        (rowCounter*rowByteSize) + // Row offset
-                        (colOffsetBytes), // Column offset
-                        &parsedBool, sizeof(bool));
+                    output.setBoolAt(colCounter, rowCounter, parsedBool);
+
+                    // DEBUGGING, maybe do under verbose mode later
                     std::cout << "Parsed bool at [col=" << colCounter << ";row=" 
                     << rowCounter  << "] = "<< parsedBool << std::endl;
                     colOffsetBytes+=sizeof(bool);
                 }
                 break;
-                default:
-                    break;
+                default: break;
                 }
 
-                ssbuffer = std::stringstream();
+                ssbuffer = std::stringstream("");
                 colCounter++;
             
             } else {
@@ -219,16 +269,69 @@ DataTable CSVParser::parseCSV(std::string filePath, ColumnType colTypes[], int n
     // Close the file handle
     fileHandle.close();
 
-    output.nCols=nCols;
-    output.nRows=nRows;
-    output.rowByteSize=rowByteSize;
-    memcpy(output.columnTypes, colTypes, nColTypes*sizeof(ColumnType));
-
     return output;
 }
 
+// Saves/serializes the contents of 'table' at the 
+// file given by 'filePath'
 bool CSVParser::saveCSV(std::string filePath, DataTable table) {
 
+    // Validate the Data Table first
+    if(!table.wasInitialized()) {
+        return false;
+    }
+
+    // Open the file handle
+    std::ofstream fileHandle(filePath);
+
+    if(!fileHandle.is_open()) {
+        std::cerr << "Error opening the file!";
+        return false;
+    }
+
+    // Serialize the column names
+    for(int i=0; i<table.nCols; i++) {
+        fileHandle << table.columnNames[i];
+        // Add comma separator (except if its the last column)
+        if(table.nCols-1!=i) fileHandle << ",";        
+    }
+    fileHandle << "\n"; // go to next line
+
+    // Serialize each value
+    for(int i=0; i<table.nRows; i++) {
+        for(int j=0; j<table.nCols; j++) {
+            switch(table.columnTypes[j]) {
+                case ColumnType::INT: { 
+                    int intVal = table.getIntAt(j,i);//*((int*)table.getRowColBufferPtr(j, i));
+                    fileHandle << intVal;
+                } break;
+                case ColumnType::DOUBLE: {
+                    double doubleVal = table.getDoubleAt(j,i);//*((double*)table.getRowColBufferPtr(j, i)); 
+                    fileHandle << doubleVal;
+                } break;
+                case ColumnType::FLOAT: {
+                    float floatVal = table.getFloatAt(j,i);//*((float*)table.getRowColBufferPtr(j, i));
+                    fileHandle << floatVal;
+                } break;
+                case ColumnType::STRING: {
+                    std::string strVal = table.getStringAt(j,i);
+                    fileHandle << strVal;
+                } break;
+                case ColumnType::BOOL: { 
+                    fileHandle << table.getBoolAt(j,i);
+                    //(*((bool*)table.getRowColBufferPtr(j, i)))? "True" : "False";
+                } break;
+                default: break;
+            }
+            // Add comma separator (except if its the last column)
+            if(table.nCols-1!=j) fileHandle << ",";
+        }
+        fileHandle << "\n"; // go to next line
+    }
+
+    // Close the file handle
+    fileHandle.close();
+    return true; // Successfuly saved
 }
 
 
