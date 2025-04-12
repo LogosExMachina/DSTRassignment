@@ -225,7 +225,7 @@ bool DataTable::setBoolAt(std::string colName, int rowNum, bool newBool) {
 
 }
 
-std::string DataTable::print() {
+void DataTable::print() {
 
     // Print column names first
     std::cout << "| ";

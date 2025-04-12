@@ -1,4 +1,4 @@
-#pragma once 
+#pragma once
 
 #ifndef DATATABLE_H
 #define DATATABLE_H
@@ -10,8 +10,8 @@
 
 enum class ColumnType {
     INT,
-    DOUBLE, 
-    FLOAT, 
+    DOUBLE,
+    FLOAT,
     STRING,
     BOOL
 };
@@ -20,19 +20,19 @@ enum class DataTableError {
     // Self explanatory
     NOT_INITIALIZED = 1,
     // Self explanatory
-    OUT_OF_BOUNDS, 
+    OUT_OF_BOUNDS,
     // i.e. trying to get a double from an
-    // int column  
+    // int column
     INVALID_TYPE_ACCESS,
-    // The provided strinLengths array wasnt 
+    // The provided strinLengths array wasnt
     // initialized or is incorrect
     //INVALID_STRING_LENGTHS_ARR, (?)
 };
 
 class DataTable {
 
-    // Declare CSVParser as friend so it does not need 
-    // getters/setters for low-level data. 
+    // Declare CSVParser as friend so it does not need
+    // getters/setters for low-level data.
     // (We don't need dumb OOP boilerplate, thats why)
     friend class CSVParser;
 
@@ -81,7 +81,7 @@ public:
     bool setBoolAt(int colNum, int rowNum, bool newBool);
     bool setBoolAt(std::string colName, int rowNum, bool newBool);
 
-    std::string print();
+    void print();
 
     int getnRows();
     int getnCols();
@@ -104,26 +104,26 @@ public:
 private:
     // (-1 and NULL for uninitialized values)
 
-    // The 'data buffer' is just a buffer of bytes where all the actual 
+    // The 'data buffer' is just a buffer of bytes where all the actual
     // data is stored. (Its unsigned because its values go from 0 to 255).
     // The data 'polymorphism' is done through the use of
     // pointers and type casting.
     unsigned char* dataBuffer=NULL;
     int rowByteSize=-1; // The size in bytes of a row in the buffer
     int nRows=-1;
-    int nCols=-1; 
+    int nCols=-1;
     unsigned char errormask = 0x0; // Use this to track errors
     std::string *columnNames;
 
-    // String lengths for each column are needed since 
+    // String lengths for each column are needed since
     // strings vary in (byte) depth.
-    // If the column is not a string, set its respective 
+    // If the column is not a string, set its respective
     // value to -1.
-    int *stringLengths=NULL; 
-    
+    int *stringLengths=NULL;
+
     // The type for each column
     ColumnType *columnTypes=NULL;
-    
+
     int getColumnByteDepth(int nCol);
     int getColumnByteOffset(int nCol);
 
