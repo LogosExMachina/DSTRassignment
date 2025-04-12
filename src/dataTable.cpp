@@ -299,12 +299,14 @@ std::string DataTable::getColumnName(int col) {
 // Returns true if successful, false otherwise.
 bool DataTable::setColumnNames(std::string *newColumnNames) {
     this->columnNames=newColumnNames;
+    return true;
 }
 
 // Returns true if successful, false otherwise.
 // Numbering starts from 0
 bool DataTable::setColumnName(int col, std::string newColumnName) {
     this->columnNames[col] = newColumnName;
+    return true;
 }
 
 bool DataTable::wasInitialized() {
