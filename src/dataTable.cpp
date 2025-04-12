@@ -4,19 +4,19 @@ DataTable::DataTable() {}
 
 DataTable::~DataTable() {
     if(NULL!=columnNames) {
-        delete columnNames;
+        delete[] columnNames;
     }
 
     if(NULL!=dataBuffer) {
-        delete dataBuffer;
+        delete[] dataBuffer;
     }
 
     if(NULL!=stringLengths) {
-        delete stringLengths;
+        delete[] stringLengths;
     }
 
     if(NULL!=columnTypes) {
-        delete columnTypes;
+        delete[] columnTypes;
     }
 
 }
