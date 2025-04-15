@@ -1,15 +1,11 @@
 #ifndef LINKEDLIST_HPP
 #define LINKEDLIST_HPP
 
-
 #include <iostream>
-#include <fstream>
 #include <sstream>
 #include <string>
 #include <ctime>
 #include <iomanip>
-#include <chrono>
-#include <unordered_map>
 
 struct Transaction {
     std::string customerID;
@@ -135,9 +131,7 @@ private:
     // recursive merge sort helper function
     Node<T>* mergeSortRecursive(Node<T>* node) {
         // base case: if list is empty or has only one element
-        if (node == nullptr || node->next == nullptr) {
-            return node;
-        }
+        if (node == nullptr || node->next == nullptr) return node;
 
         // split the list into two halves
         Node<T>* middle = getMiddle(node);
@@ -154,9 +148,7 @@ private:
 
     // find the middle node of a linked list
     Node<T>* getMiddle(Node<T>* head) {
-        if (head == nullptr) {
-            return head;
-        }
+        if (head == nullptr) return head;
 
         Node<T>* slow = head;
         Node<T>* fast = head;
@@ -174,14 +166,10 @@ private:
         Node<T>* result = nullptr;
 
         // base cases
-        if (a == nullptr) {
-            return b;
-        }
-        if (b == nullptr) {
-            return a;
-        }
+        if (a == nullptr) return b;
+        if (b == nullptr) return a;
 
-        // compare date strings for transaction objects
+        // compare
         if (std::is_same<T, Transaction>::value) {
             Transaction& transA = static_cast<Node<Transaction>*>(a)->data;
             Transaction& transB = static_cast<Node<Transaction>*>(b)->data;
@@ -200,9 +188,10 @@ private:
                 result->next = merge(a, b->next);
             }
         }
-        // for other types, this would need additional comparison logic
+
+        // TODO implement for other data types
+
         else {
-            // default behavior for other types
             result = a;
             result->next = merge(a->next, b);
         }
@@ -211,7 +200,6 @@ private:
     }
 
 public:
-    // linear search for transactions by category
     LinkedList<Transaction> searchByCategory(const std::string& category) {
         LinkedList<Transaction> results;
         Node<Transaction>* current = static_cast<Node<Transaction>*>(head);
@@ -226,7 +214,6 @@ public:
         return results;
     }
 
-    // search transactions by payment method
     LinkedList<Transaction> searchByPaymentMethod(const std::string& paymentMethod) {
         LinkedList<Transaction> results;
         Node<Transaction>* current = static_cast<Node<Transaction>*>(head);
@@ -241,7 +228,6 @@ public:
         return results;
     }
 
-    // search transactions by both category and payment method
     LinkedList<Transaction> searchByCategoryAndPayment(const std::string& category, const std::string& paymentMethod) {
         LinkedList<Transaction> results;
         Node<Transaction>* current = static_cast<Node<Transaction>*>(head);
@@ -256,7 +242,6 @@ public:
         return results;
     }
 
-    // search reviews by rating
     LinkedList<Review> searchByRating(int rating) {
         LinkedList<Review> results;
         Node<Review>* current = static_cast<Node<Review>*>(head);

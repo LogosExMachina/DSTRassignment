@@ -3,8 +3,10 @@
 #include <map>
 #include <chrono>
 #include <algorithm>
+#include <chrono>
+#include <fstream>
 
-// Function to load transactions from CSV file
+// parse csv
 LinkedList<Transaction> loadTransactions(const std::string& filename) {
     LinkedList<Transaction> transactions;
     std::ifstream file(filename);
@@ -15,14 +17,14 @@ LinkedList<Transaction> loadTransactions(const std::string& filename) {
     }
 
     std::string line;
-    // Skip header line
+    // skip header line
     std::getline(file, line);
 
     while (std::getline(file, line)) {
         std::istringstream ss(line);
         Transaction transaction;
 
-        // Parse CSV columns
+        // parse csv columns
         std::string priceStr;
         std::getline(ss, transaction.customerID, ',');
         std::getline(ss, transaction.product, ',');
@@ -31,7 +33,7 @@ LinkedList<Transaction> loadTransactions(const std::string& filename) {
         std::getline(ss, transaction.date, ',');
         std::getline(ss, transaction.paymentMethod, ',');
 
-        // Convert price string to double
+        // convert price string to double
         try {
             transaction.price = std::stod(priceStr);
             transactions.append(transaction);
@@ -44,7 +46,6 @@ LinkedList<Transaction> loadTransactions(const std::string& filename) {
     return transactions;
 }
 
-// Function to load reviews from CSV file
 LinkedList<Review> loadReviews(const std::string& filename) {
     LinkedList<Review> reviews;
     std::ifstream file(filename);
@@ -55,21 +56,21 @@ LinkedList<Review> loadReviews(const std::string& filename) {
     }
 
     std::string line;
-    // Skip header line
+    // skip header line
     std::getline(file, line);
 
     while (std::getline(file, line)) {
         std::istringstream ss(line);
         Review review;
 
-        // Parse CSV columns
+        // parse csv columns
         std::string ratingStr;
         std::getline(ss, review.productID, ',');
         std::getline(ss, review.customerID, ',');
         std::getline(ss, ratingStr, ',');
         std::getline(ss, review.reviewText);
 
-        // Convert rating string to int
+        // convert rating string to int
         try {
             review.rating = std::stoi(ratingStr);
             reviews.append(review);
@@ -82,7 +83,7 @@ LinkedList<Review> loadReviews(const std::string& filename) {
     return reviews;
 }
 
-// Function to analyze word frequency in reviews
+// analyze word frequency in reviews
 std::map<std::string, int> analyzeReviewWords(const LinkedList<Review>& reviews) {
     std::map<std::string, int> wordFrequency;
 
@@ -93,16 +94,16 @@ std::map<std::string, int> analyzeReviewWords(const LinkedList<Review>& reviews)
         std::string word;
 
         while (ss >> word) {
-            // Remove punctuation
+            // remove punctuation
             word.erase(std::remove_if(word.begin(), word.end(),
                      [](char c) { return std::ispunct(static_cast<unsigned char>(c)); }),
                      word.end());
 
-            // Convert to lowercase
+            // convert to lowercase
             std::transform(word.begin(), word.end(), word.begin(),
                      [](unsigned char c) { return std::tolower(c); });
 
-            // Increment frequency
+            // increment frequency
             if (!word.empty()) {
                 wordFrequency[word]++;
             }
@@ -112,12 +113,12 @@ std::map<std::string, int> analyzeReviewWords(const LinkedList<Review>& reviews)
     return wordFrequency;
 }
 
-// Utility function to print most frequent words
+// utility function to print most frequent words
 void printMostFrequentWords(const std::map<std::string, int>& wordFrequency, int topN) {
-    // Create vector of pairs from map
+    // create vector of pairs from map
     std::vector<std::pair<std::string, int>> wordPairs(wordFrequency.begin(), wordFrequency.end());
 
-    // Sort by frequency in descending order
+    // sort by frequency in descending order
     std::sort(wordPairs.begin(), wordPairs.end(),
              [](const std::pair<std::string, int>& a, const std::pair<std::string, int>& b) {
                  return a.second > b.second;
@@ -136,7 +137,7 @@ int main() {
     std::cout << "E-Commerce Data Analysis using Linked Lists\n";
     std::cout << "===========================================\n\n";
 
-    // Load transaction data
+    // load transaction data
     auto startTime = std::chrono::high_resolution_clock::now();
     LinkedList<Transaction> transactions = loadTransactions("data/transactions_cleaned.csv");
     auto endTime = std::chrono::high_resolution_clock::now();
@@ -144,7 +145,7 @@ int main() {
 
     std::cout << "Loaded " << transactions.getSize() << " transactions in " << duration << " ms\n";
 
-    // Load review data
+    // load review data
     startTime = std::chrono::high_resolution_clock::now();
     LinkedList<Review> reviews = loadReviews("data/reviews_cleaned.csv");
     endTime = std::chrono::high_resolution_clock::now();
@@ -152,7 +153,7 @@ int main() {
 
     std::cout << "Loaded " << reviews.getSize() << " reviews in " << duration << " ms\n\n";
 
-    // Question 1: Sort transactions by date
+    // question 1: sort transactions by date
     std::cout << "Question 1: Sorting transactions by date...\n";
     startTime = std::chrono::high_resolution_clock::now();
     transactions.mergeSort();
@@ -163,14 +164,14 @@ int main() {
     std::cout << "Total number of transactions: " << transactions.getSize() << "\n";
     std::cout << "Total number of reviews: " << reviews.getSize() << "\n\n";
 
-    // Print first 5 transactions to verify sorting
+    // print first 5 transactions to verify sorting
     std::cout << "First 5 transactions after sorting:\n";
     for (int i = 0; i < 5 && i < transactions.getSize(); i++) {
         transactions.get(i).print();
     }
     std::cout << "\n";
 
-    // Question 2: Calculate percentage of Electronics category purchases using Credit Card
+    // question 2: calculate percentage of electronics category purchases using credit card
     std::cout << "Question 2: Analyzing Electronics category purchases...\n";
     startTime = std::chrono::high_resolution_clock::now();
 
@@ -192,7 +193,7 @@ int main() {
     std::cout << "Percentage: " << std::fixed << std::setprecision(2) << percentage << "%\n";
     std::cout << "Search and calculation completed in " << duration << " ms\n\n";
 
-    // Question 3: Find most frequent words in 1-star reviews
+    // question 3: find most frequent words in 1-star reviews
     std::cout << "Question 3: Analyzing words in 1-star reviews...\n";
     startTime = std::chrono::high_resolution_clock::now();
 
@@ -205,7 +206,6 @@ int main() {
     std::cout << "Found " << oneStarReviews.getSize() << " 1-star reviews\n";
     std::cout << "Word analysis completed in " << duration << " ms\n\n";
 
-    // Print top 10 most frequent words in 1-star reviews
     printMostFrequentWords(wordFrequency, 10);
 
     return 0;
