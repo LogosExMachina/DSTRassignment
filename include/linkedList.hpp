@@ -6,6 +6,7 @@
 #include <string>
 #include <ctime>
 #include <iomanip>
+#include <type_traits>
 
 struct Transaction {
     std::string customerID;
@@ -45,6 +46,13 @@ struct Review {
                   << ", Rating: " << rating
                   << ", Review: " << reviewText << std::endl;
     }
+};
+
+struct WordFrequency {
+    std::string word;
+    int frequency;
+
+    WordFrequency(const std::string& w, int f) : word(w), frequency(f) {}
 };
 
 // node
@@ -170,7 +178,7 @@ private:
         if (b == nullptr) return a;
 
         // compare
-        if (std::is_same<T, Transaction>::value) {
+        if constexpr (std::is_same<T, Transaction>::value) {
             Transaction& transA = static_cast<Node<Transaction>*>(a)->data;
             Transaction& transB = static_cast<Node<Transaction>*>(b)->data;
 
@@ -181,6 +189,19 @@ private:
             time_t dateB = std::mktime(&timeB);
 
             if (dateA <= dateB) {
+                result = a;
+                result->next = merge(a->next, b);
+            } else {
+                result = b;
+                result->next = merge(a, b->next);
+            }
+        }
+
+        else if constexpr (std::is_same<T, WordFrequency>::value) {
+            WordFrequency& wfA = static_cast<Node<WordFrequency>*>(a)->data;
+            WordFrequency& wfB = static_cast<Node<WordFrequency>*>(b)->data;
+
+            if (wfA.frequency >= wfB.frequency) {
                 result = a;
                 result->next = merge(a->next, b);
             } else {
@@ -254,6 +275,19 @@ public:
         }
 
         return results;
+    }
+
+    WordFrequency* getWord(const std::string& word) {
+        Node<WordFrequency>* current = static_cast<Node<WordFrequency>*>(head);
+
+        while (current != nullptr) {
+            if (current->data.word == word) {
+              return &current->data;
+            }
+            current = current->next;
+        }
+
+        return nullptr;
     }
 
     // helper method to print all elements

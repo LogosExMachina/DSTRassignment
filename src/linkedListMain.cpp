@@ -1,6 +1,4 @@
 #include "linkedList.hpp"
-#include <vector>
-#include <map>
 #include <chrono>
 #include <algorithm>
 #include <chrono>
@@ -84,8 +82,8 @@ LinkedList<Review> loadReviews(const std::string& filename) {
 }
 
 // analyze word frequency in reviews
-std::map<std::string, int> analyzeReviewWords(const LinkedList<Review>& reviews) {
-    std::map<std::string, int> wordFrequency;
+LinkedList<WordFrequency> analyzeReviewWords(const LinkedList<Review>& reviews) {
+    LinkedList<WordFrequency> wordFrequency;
 
     LinkedList<Review>::Iterator it = reviews.iterator();
     while (it.hasNext()) {
@@ -105,32 +103,37 @@ std::map<std::string, int> analyzeReviewWords(const LinkedList<Review>& reviews)
 
             // increment frequency
             if (!word.empty()) {
-                wordFrequency[word]++;
+                WordFrequency* wf = wordFrequency.getWord(word);
+                // if word already exists, increment frequency
+                if (wf != nullptr) {
+                    wf->frequency++;
+                } else {
+                    wordFrequency.append(WordFrequency(word, 1));
+                }
             }
         }
     }
+
+    // sort
+    wordFrequency.mergeSort();
 
     return wordFrequency;
 }
 
 // utility function to print most frequent words
-void printMostFrequentWords(const std::map<std::string, int>& wordFrequency, int topN) {
-    // create vector of pairs from map
-    std::vector<std::pair<std::string, int>> wordPairs(wordFrequency.begin(), wordFrequency.end());
+void printMostFrequentWords(const LinkedList<WordFrequency>& wordFrequency, int topN) {
+    std::cout << "Most frequent words in 1-star reviews:\n";
+    std::cout << "---------------------------------------\n";
 
-    // sort by frequency in descending order
-    std::sort(wordPairs.begin(), wordPairs.end(),
-             [](const std::pair<std::string, int>& a, const std::pair<std::string, int>& b) {
-                 return a.second > b.second;
-             });
-
-    std::cout << "Most frequent words in reviews:\n";
+    LinkedList<WordFrequency>::Iterator it = wordFrequency.iterator();
     int count = 0;
-    for (const auto& pair : wordPairs) {
-        if (count >= topN) break;
-        std::cout << pair.first << ": " << pair.second << " occurrences\n";
+    while (it.hasNext() && count < topN) {
+        WordFrequency wf = it.next();
+        std::cout << wf.word << ": " << wf.frequency << "\n";
         count++;
     }
+
+    std::cout << "\n";
 }
 
 int main() {
@@ -198,7 +201,7 @@ int main() {
     startTime = std::chrono::high_resolution_clock::now();
 
     LinkedList<Review> oneStarReviews = reviews.searchByRating(1);
-    std::map<std::string, int> wordFrequency = analyzeReviewWords(oneStarReviews);
+    LinkedList<WordFrequency> wordFrequency = analyzeReviewWords(oneStarReviews);
 
     endTime = std::chrono::high_resolution_clock::now();
     duration = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime).count();
