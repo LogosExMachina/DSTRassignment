@@ -115,6 +115,8 @@ private:
     unsigned char errormask = 0x0; // Use this to track errors
     std::string *columnNames;
 
+    //int maxAlignment;
+
     // String lengths for each column are needed since 
     // strings vary in (byte) depth.
     // If the column is not a string, set its respective 
@@ -136,7 +138,6 @@ private:
 
     // Returns true if an error occurred when modifying(setting) data, false otherwise
     bool checkModificationError(int colNum, int rowNum, ColumnType colType);
-
 
 };
 

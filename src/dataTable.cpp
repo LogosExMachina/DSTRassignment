@@ -18,7 +18,6 @@ DataTable::~DataTable() {
     if(NULL!=columnTypes) {
         delete columnTypes;
     }
-
 }
 
 int DataTable::getIntAt(int colNum, int rowNum) {
@@ -322,19 +321,19 @@ int DataTable::getColumnByteDepth(int nCol) {
     int depth=0;
     switch(columnTypes[nCol]) {
         case ColumnType::INT:
-            depth=sizeof(int);    
+            depth=alignof(int); //sizeof(int);    
             break;  
         case ColumnType::DOUBLE:
-            depth=sizeof(double);    
+            depth=alignof(double); //sizeof(double);    
             break;
         case ColumnType::FLOAT:
-            depth=sizeof(float);    
+            depth= alignof(float); //sizeof(float);    
             break;
         case ColumnType::STRING:
             depth = (stringLengths[nCol] > 0)? stringLengths[nCol] : 0;
             break;
         case ColumnType::BOOL:
-            depth=sizeof(bool);    
+            depth= alignof(bool); //sizeof(bool);    
             break;
         default: break;
     }
@@ -343,7 +342,13 @@ int DataTable::getColumnByteDepth(int nCol) {
 
 int DataTable::getColumnByteOffset(int nCol) {
     int colOffset=0;
-    for(int i=0;i<nCol;i++) colOffset+=getColumnByteDepth(i);
+    for(int i=0;i<nCol;i++) {
+        //int depth = getColumnByteDepth(i); 
+        // Byte alignment enforcement
+        //colOffset = (colOffset + depth + (alignof(double) - 1)) & ~(alignof(double) - 1);
+        
+        colOffset+=getColumnByteDepth(i);
+    } 
     return colOffset;
 }
 

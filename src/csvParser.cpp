@@ -47,13 +47,13 @@ DataTable CSVParser::parseCSV(std::string filePath, ColumnType colTypes[], int s
     for(int i=0;i<nCols;i++) {
         switch(colTypes[i]) {
             case ColumnType::INT: 
-                rowByteSize+=(int)sizeof(int);  
+                rowByteSize+=(int)alignof(int); //sizeof(int);  
                 break;
             case ColumnType::DOUBLE: 
-                rowByteSize+=(int)sizeof(double);  
+                rowByteSize+=(int)alignof(double); //sizeof(double);  
                 break;
             case ColumnType::FLOAT:  
-                rowByteSize+=(int)sizeof(float);
+                rowByteSize+=(int)alignof(float); ////sizeof(float);
                 break;
             case ColumnType::STRING: 
                 hasStrings=true;
@@ -63,7 +63,7 @@ DataTable CSVParser::parseCSV(std::string filePath, ColumnType colTypes[], int s
                     //sizeof(std::string);
                 break;
             case ColumnType::BOOL: 
-                rowByteSize+=(int)sizeof(bool);
+                rowByteSize+=(int)alignof(bool); //sizeof(bool);
                 break;
             default: break;    
         }
@@ -111,7 +111,7 @@ DataTable CSVParser::parseCSV(std::string filePath, ColumnType colTypes[], int s
     std::cout << "nRows = " << nRows << std::endl;
     std::cout << "rowByteSize = " << rowByteSize << std::endl;
 
-    // Allocate the data buffer
+    // Allocate the data buffer (ENFORCE ALIGNMENT !!!)
     output.dataBuffer = new unsigned char[rowByteSize*nRows];
     for(int i=0;i<nRows;i++) {
         for(int j=0;j<rowByteSize;j++) {
@@ -126,10 +126,10 @@ DataTable CSVParser::parseCSV(std::string filePath, ColumnType colTypes[], int s
     output.rowByteSize=rowByteSize;
 
     output.stringLengths = new int[nCols];
-    memcpy(output.stringLengths, stringLengths, nCols*sizeof(int));
+    memcpy(output.stringLengths, stringLengths, nCols*alignof(int));   //sizeof(int));
 
     output.columnTypes = new ColumnType[nColTypes];
-    memcpy(output.columnTypes, colTypes, nColTypes*sizeof(ColumnType));
+    memcpy(output.columnTypes, colTypes, nColTypes*alignof(ColumnType)); //sizeof(ColumnType));
 
     // Reset the position (internal pointers of the 
     // file handle)
@@ -187,7 +187,7 @@ DataTable CSVParser::parseCSV(std::string filePath, ColumnType colTypes[], int s
                     std::cout << "Parsed int at [col=" << colCounter << ";row=" 
                     << rowCounter  << "] = "<< parsedInt << std::endl;
 
-                    colOffsetBytes+=sizeof(int);
+                    colOffsetBytes+= alignof(int); //sizeof(int);
                 }
                 break;
                 case ColumnType::DOUBLE: {
@@ -200,7 +200,7 @@ DataTable CSVParser::parseCSV(std::string filePath, ColumnType colTypes[], int s
                     std::cout << "Parsed double at [col=" << colCounter << ";row=" 
                     << rowCounter  << "] = "<< parsedDouble << std::endl;
 
-                    colOffsetBytes+=sizeof(double);
+                    colOffsetBytes+=alignof(double); //sizeof(double);
                 }
                 break;
                 case ColumnType::FLOAT: {  
@@ -212,7 +212,7 @@ DataTable CSVParser::parseCSV(std::string filePath, ColumnType colTypes[], int s
                     std::cout << "Parsed float at [col=" << colCounter << ";row=" 
                     << rowCounter  << "] = "<< parsedFloat << std::endl;
                     
-                    colOffsetBytes+=sizeof(float);
+                    colOffsetBytes+=alignof(float); //sizeof(float);
                 }
                 break;
                 case ColumnType::STRING: {
@@ -226,9 +226,11 @@ DataTable CSVParser::parseCSV(std::string filePath, ColumnType colTypes[], int s
                     std::string parsedString = ssbuffer.str();
                     trimLeadingInPlace_STL(parsedString);
                     trimTrailingInPlace_STL(parsedString);
-                    const char* stringContents = parsedString.c_str();
                     
-                    output.setStringAt(colCounter, rowCounter, stringContents);
+                    //const char* stringContents = parsedString.c_str();
+                    //output.setStringAt(colCounter, rowCounter, stringContents);
+                    
+                    output.setStringAt(colCounter, rowCounter, parsedString);
 
                     // DEBUGGING, maybe do under verbose mode later
                     std::cout << "Parsed string at [col=" << colCounter << ";row=" 
@@ -249,7 +251,7 @@ DataTable CSVParser::parseCSV(std::string filePath, ColumnType colTypes[], int s
                     // DEBUGGING, maybe do under verbose mode later
                     std::cout << "Parsed bool at [col=" << colCounter << ";row=" 
                     << rowCounter  << "] = "<< parsedBool << std::endl;
-                    colOffsetBytes+=sizeof(bool);
+                    colOffsetBytes+=alignof(bool); //sizeof(bool);
                 }
                 break;
                 default: break;
@@ -296,7 +298,7 @@ bool CSVParser::saveCSV(std::string filePath, DataTable table) {
         if(table.nCols-1!=i) fileHandle << ",";        
     }
     fileHandle << "\n"; // go to next line
-
+ 
     // Serialize each value
     for(int i=0; i<table.nRows; i++) {
         for(int j=0; j<table.nCols; j++) {

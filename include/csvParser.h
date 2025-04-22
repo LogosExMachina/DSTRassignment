@@ -21,7 +21,6 @@ public:
     // returns a DataTable containing its deserialized representation.
     DataTable parseCSV(std::string filePath, ColumnType colTypes[], 
         int stringLengths[], int nColTypes);
-
     
     // Saves/serializes the contents of 'table' at the 
     // file given by 'filePath'.
