@@ -4,30 +4,31 @@ DataTable::DataTable() {}
 
 DataTable::~DataTable() {
     if(NULL!=columnNames) {
-        delete columnNames;
+        delete[] columnNames;
     }
 
     if(NULL!=dataBuffer) {
-        delete dataBuffer;
+        delete[] dataBuffer;
     }
 
     if(NULL!=stringLengths) {
-        delete stringLengths;
+        delete[] stringLengths;
     }
 
     if(NULL!=columnTypes) {
-        delete columnTypes;
+        delete[] columnTypes;
     }
+
 }
 
 int DataTable::getIntAt(int colNum, int rowNum) {
 
-    if(checkLookupError(colNum, rowNum, ColumnType::INT)) 
+    if(checkLookupError(colNum, rowNum, ColumnType::INT))
         return -1;
 
     int target;
     memcpy(
-        &target, 
+        &target,
         getColRowBufferPtr(colNum, rowNum),
         getColumnByteDepth(colNum)
     );
@@ -40,12 +41,12 @@ int DataTable::getIntAt(std::string colName, int rowNum) {
 }
 
 double DataTable::getDoubleAt(int colNum, int rowNum) {
-    if(checkLookupError(colNum, rowNum, ColumnType::DOUBLE)) 
+    if(checkLookupError(colNum, rowNum, ColumnType::DOUBLE))
         return -1;
 
     double target;
     memcpy(
-        &target, 
+        &target,
         getColRowBufferPtr(colNum, rowNum),
         getColumnByteDepth(colNum)
     );
@@ -57,13 +58,13 @@ double DataTable::getDoubleAt(std::string colName, int rowNum) {
 
 }
 
-float DataTable::getFloatAt(int colNum, int rowNum) { 
-    if(checkLookupError(colNum, rowNum, ColumnType::FLOAT)) 
+float DataTable::getFloatAt(int colNum, int rowNum) {
+    if(checkLookupError(colNum, rowNum, ColumnType::FLOAT))
         return -1;
 
     float target;
     memcpy(
-        &target, 
+        &target,
         getColRowBufferPtr(colNum, rowNum),
         getColumnByteDepth(colNum)
     );
@@ -71,13 +72,13 @@ float DataTable::getFloatAt(int colNum, int rowNum) {
     return target;
 }
 
-float DataTable::getFloatAt(std::string colName, int rowNum) { 
+float DataTable::getFloatAt(std::string colName, int rowNum) {
 
 }
 
 // Numbering starts from 0
 std::string DataTable::getStringAt(int colNum, int rowNum) {
-    if(checkLookupError(colNum, rowNum, ColumnType::STRING)) 
+    if(checkLookupError(colNum, rowNum, ColumnType::STRING))
         return nullptr;
 
     if(0>=stringLengths[colNum]) {
@@ -103,12 +104,12 @@ std::string DataTable::getStringAt(std::string colName, int rowNum) {
 
 // Numbering starts from 0
 bool DataTable::getBoolAt(int colNum, int rowNum) {
-    if(checkLookupError(colNum, rowNum, ColumnType::BOOL)) 
+    if(checkLookupError(colNum, rowNum, ColumnType::BOOL))
         return -1;
 
     bool target;
     memcpy(
-        &target, 
+        &target,
         getColRowBufferPtr(colNum, rowNum),
         getColumnByteDepth(colNum)
     );
@@ -122,7 +123,7 @@ bool DataTable::getBoolAt(std::string colName, int rowNum) {
 
 // Numbering starts from 0
 bool DataTable::setIntAt(int colNum, int rowNum, int newInt) {
-    if(checkModificationError(colNum, rowNum, ColumnType::INT)) 
+    if(checkModificationError(colNum, rowNum, ColumnType::INT))
         return false;
 
     int newIntCpy = newInt; // force into modifiable lvalue
@@ -141,7 +142,7 @@ bool DataTable::setIntAt(std::string colName, int rowNum, int newInt) {
 
 // Numbering starts from 0
 bool DataTable::setDoubleAt(int colNum, int rowNum, double newDouble) {
-    if(checkModificationError(colNum, rowNum, ColumnType::DOUBLE)) 
+    if(checkModificationError(colNum, rowNum, ColumnType::DOUBLE))
         return false;
 
     double newDoubleCpy = newDouble; // force into modifiable lvalue
@@ -160,7 +161,7 @@ bool DataTable::setDoubleAt(std::string colName, int rowNum, double newDouble) {
 
 // Numbering starts from 0
 bool DataTable::setFloatAt(int colNum, int rowNum, float newFloat) {
-    if(checkModificationError(colNum, rowNum, ColumnType::FLOAT)) 
+    if(checkModificationError(colNum, rowNum, ColumnType::FLOAT))
         return false;
 
     float newFloatCpy = newFloat; // force into modifiable lvalue
@@ -179,16 +180,16 @@ bool DataTable::setFloatAt(std::string colName, int rowNum, float newFloat) {
 
 // Numbering starts from 0
 bool DataTable::setStringAt(int colNum, int rowNum, std::string newString) {
-    if(checkModificationError(colNum, rowNum, ColumnType::STRING)) 
+    if(checkModificationError(colNum, rowNum, ColumnType::STRING))
         return false;
 
-    const char* newStringContents = newString.c_str(); 
+    const char* newStringContents = newString.c_str();
     memcpy(
         getColRowBufferPtr(colNum, rowNum),
         newStringContents,
         getColumnByteDepth(colNum)
     );
-        
+
     /*
     std::string newStringCpy = newString; // force into modifiable lvalue
     memcpy(
@@ -207,7 +208,7 @@ bool DataTable::setStringAt(std::string colName, int rowNum, std::string newStri
 
 // Numbering starts from 0
 bool DataTable::setBoolAt(int colNum, int rowNum, bool newBool) {
-    if(checkModificationError(colNum, rowNum, ColumnType::BOOL)) 
+    if(checkModificationError(colNum, rowNum, ColumnType::BOOL))
         return false;
 
     bool newBoolCpy = newBool; // force into modifiable lvalue
@@ -224,7 +225,7 @@ bool DataTable::setBoolAt(std::string colName, int rowNum, bool newBool) {
 
 }
 
-std::string DataTable::print() {
+void DataTable::print() {
 
     // Print column names first
     std::cout << "| ";
@@ -236,11 +237,11 @@ std::string DataTable::print() {
         std::cout << "| ";
         for(int j=0;j<nCols;j++) {
             switch(columnTypes[j]) {
-                case ColumnType::INT: 
-                    std::cout << getIntAt(j, i); 
+                case ColumnType::INT:
+                    std::cout << getIntAt(j, i);
                 break;
-                case ColumnType::DOUBLE: 
-                    std::cout << getDoubleAt(j, i); 
+                case ColumnType::DOUBLE:
+                    std::cout << getDoubleAt(j, i);
                 break;
                 case ColumnType::FLOAT:
                     std::cout << getFloatAt(j, i);
@@ -248,14 +249,14 @@ std::string DataTable::print() {
                 case ColumnType::STRING:
                     std::cout << getStringAt(j, i);
                 break;
-                case ColumnType::BOOL: 
+                case ColumnType::BOOL:
                     std::cout << (getBoolAt(j, i)? "True" : "False");
                 break;
                 default: break;
             }
             std::cout << " | ";
         }
-        std::cout << std::endl; 
+        std::cout << std::endl;
     }
 }
 
@@ -268,14 +269,14 @@ int DataTable::getnCols() {
 }
 
 void DataTable::printRowBinary(int nRow) {
-    unsigned char* rowBuffer = new unsigned char[rowByteSize];    
+    unsigned char* rowBuffer = new unsigned char[rowByteSize];
     memcpy(
-        rowBuffer, 
-        (unsigned char*)dataBuffer + 
+        rowBuffer,
+        (unsigned char*)dataBuffer +
         (size_t)(nRow*rowByteSize),
-        (size_t)rowByteSize 
+        (size_t)rowByteSize
     );
-    
+
     std::cout<<"[r="<<nRow<<"]: ";
     for(int i=0;i<rowByteSize;i++) {
         char b = *(rowBuffer + i);
@@ -298,22 +299,24 @@ std::string DataTable::getColumnName(int col) {
 // Returns true if successful, false otherwise.
 bool DataTable::setColumnNames(std::string *newColumnNames) {
     this->columnNames=newColumnNames;
+    return true;
 }
 
 // Returns true if successful, false otherwise.
 // Numbering starts from 0
 bool DataTable::setColumnName(int col, std::string newColumnName) {
     this->columnNames[col] = newColumnName;
+    return true;
 }
 
 bool DataTable::wasInitialized() {
-    return 
+    return
         this->nRows > 0 &&
         this->nCols > 0 &&
         this->columnNames != NULL &&
-        this->columnTypes != NULL && 
+        this->columnTypes != NULL &&
         this->dataBuffer != NULL &&
-        this->rowByteSize != -1 && 
+        this->rowByteSize != -1 &&
         this->stringLengths != NULL;
 }
 
@@ -321,19 +324,19 @@ int DataTable::getColumnByteDepth(int nCol) {
     int depth=0;
     switch(columnTypes[nCol]) {
         case ColumnType::INT:
-            depth=alignof(int); //sizeof(int);    
-            break;  
+            depth=sizeof(int);
+            break;
         case ColumnType::DOUBLE:
-            depth=alignof(double); //sizeof(double);    
+            depth=sizeof(double);
             break;
         case ColumnType::FLOAT:
-            depth= alignof(float); //sizeof(float);    
+            depth=sizeof(float);
             break;
         case ColumnType::STRING:
             depth = (stringLengths[nCol] > 0)? stringLengths[nCol] : 0;
             break;
         case ColumnType::BOOL:
-            depth= alignof(bool); //sizeof(bool);    
+            depth=sizeof(bool);
             break;
         default: break;
     }
@@ -342,13 +345,7 @@ int DataTable::getColumnByteDepth(int nCol) {
 
 int DataTable::getColumnByteOffset(int nCol) {
     int colOffset=0;
-    for(int i=0;i<nCol;i++) {
-        //int depth = getColumnByteDepth(i); 
-        // Byte alignment enforcement
-        //colOffset = (colOffset + depth + (alignof(double) - 1)) & ~(alignof(double) - 1);
-        
-        colOffset+=getColumnByteDepth(i);
-    } 
+    for(int i=0;i<nCol;i++) colOffset+=getColumnByteDepth(i);
     return colOffset;
 }
 
@@ -357,7 +354,7 @@ bool DataTable::checkLookupError(int colNum, int rowNum, ColumnType colType) {
     bool error = false;
 
     if(!wasInitialized()) {
-        errormask |= (unsigned char)DataTableError::NOT_INITIALIZED;        
+        errormask |= (unsigned char)DataTableError::NOT_INITIALIZED;
         error = true;
     }
 
@@ -365,7 +362,7 @@ bool DataTable::checkLookupError(int colNum, int rowNum, ColumnType colType) {
         errormask |= (unsigned char)DataTableError::OUT_OF_BOUNDS;
         error = true;
     }
-    
+
     if(colType!=columnTypes[colNum]) {
         errormask |= (unsigned char)DataTableError::INVALID_TYPE_ACCESS;
         error = true;
@@ -378,7 +375,7 @@ bool DataTable::checkModificationError(int colNum, int rowNum, ColumnType colTyp
     bool error = false;
 
     if(!wasInitialized()) {
-        errormask |= (unsigned char)DataTableError::NOT_INITIALIZED;        
+        errormask |= (unsigned char)DataTableError::NOT_INITIALIZED;
         error = true;
     }
 
@@ -386,7 +383,7 @@ bool DataTable::checkModificationError(int colNum, int rowNum, ColumnType colTyp
         errormask |= (unsigned char)DataTableError::OUT_OF_BOUNDS;
         error = true;
     }
-    
+
     if(colType!=columnTypes[colNum]) {
         errormask |= (unsigned char)DataTableError::INVALID_TYPE_ACCESS;
         error = true;
@@ -397,7 +394,7 @@ bool DataTable::checkModificationError(int colNum, int rowNum, ColumnType colTyp
 // Returns the address in the data buffer where
 // the value of [colNum, rowNum] is stored
 unsigned char* DataTable::getColRowBufferPtr(int colNum, int rowNum) {
-    return 
+    return
         (unsigned char*)dataBuffer // Base buffer pointer
         + (size_t)(rowByteSize*rowNum) // Row (vertical) offset
         +  (size_t)getColumnByteOffset(colNum); // Column (horizontal) offset
