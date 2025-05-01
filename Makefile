@@ -38,7 +38,7 @@ $(EXE1): $(addprefix $(OBJDIR), csvParserTst.o csvParser.o dataTable.o strUtils.
 	$(CXX) $(CXXFLAGS) -g $^ -o $@ $(LDFLAGS)
 
 # Executable 2
-$(EXE2): $(addprefix $(OBJDIR), linkedListMain.o)
+$(EXE2): $(addprefix $(OBJDIR), csvParser.o dataTable.o strUtils.o linkedListMain.o)
 	$(CXX) $(CXXFLAGS) -g $^ -o $@ $(LDFLAGS)
 
 # Object compilation rule

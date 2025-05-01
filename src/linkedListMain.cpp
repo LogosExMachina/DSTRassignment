@@ -1,4 +1,7 @@
+#include "csvParser.h"
+#include "dataTable.h"
 #include "linkedList.hpp"
+
 #include <chrono>
 #include <algorithm>
 #include <chrono>
@@ -7,77 +10,84 @@
 // parse csv
 LinkedList<Transaction> loadTransactions(const std::string& filename) {
     LinkedList<Transaction> transactions;
-    std::ifstream file(filename);
 
-    if (!file.is_open()) {
-        std::cerr << "Error opening file: " << filename << std::endl;
+    // santi's csv parser
+    CSVParser parser;
+    ColumnType colTypes[] = {
+        ColumnType::STRING, // Customer ID
+        ColumnType::STRING, // Product
+        ColumnType::STRING, // Category
+        ColumnType::DOUBLE, // Price
+        ColumnType::STRING, // Date
+        ColumnType::STRING  // Payment Method
+    };
+    int maxStringLengths[] = {
+        16,
+        16,
+        16,
+        -1,
+        16,
+        16,
+    };
+    int nCols = sizeof(colTypes)/sizeof(ColumnType);
+    DataTable table = parser.parseCSV("data/transactions_cleaned.csv", colTypes, maxStringLengths, nCols);
+
+    if(!table.wasInitialized()) {
+        std::cout << "Error when loading table from CSV" << std::endl;
         return transactions;
     }
 
-    std::string line;
-    // skip header line
-    std::getline(file, line);
-
-    while (std::getline(file, line)) {
-        std::istringstream ss(line);
+    // convert to linked list
+    for (int i = 0; i < table.getnRows(); i++) {
         Transaction transaction;
+        transaction.customerID = table.getStringAt(0, i);
+        transaction.product = table.getStringAt(1, i);
+        transaction.category = table.getStringAt(2, i);
+        transaction.price = table.getDoubleAt(3, i);
+        transaction.date = table.getStringAt(4, i);
+        transaction.paymentMethod = table.getStringAt(5, i);
 
-        // parse csv columns
-        std::string priceStr;
-        std::getline(ss, transaction.customerID, ',');
-        std::getline(ss, transaction.product, ',');
-        std::getline(ss, transaction.category, ',');
-        std::getline(ss, priceStr, ',');
-        std::getline(ss, transaction.date, ',');
-        std::getline(ss, transaction.paymentMethod, ',');
-
-        // convert price string to double
-        try {
-            transaction.price = std::stod(priceStr);
-            transactions.append(transaction);
-        } catch (const std::exception& e) {
-            std::cerr << "Error parsing price: " << priceStr << std::endl;
-        }
+        transactions.append(transaction);
     }
 
-    file.close();
     return transactions;
 }
 
 LinkedList<Review> loadReviews(const std::string& filename) {
     LinkedList<Review> reviews;
-    std::ifstream file(filename);
 
-    if (!file.is_open()) {
-        std::cerr << "Error opening file: " << filename << std::endl;
+    // santi's csv parser
+    CSVParser parser;
+    ColumnType colTypes[] = {
+        ColumnType::STRING, // Product ID
+        ColumnType::STRING, // Customer ID
+        ColumnType::INT,    // Rating
+        ColumnType::STRING  // Review Text
+    };
+    int maxStringLengths[] = {
+        16,
+        16,
+        -1,
+        256,
+    };
+    int nCols = sizeof(colTypes)/sizeof(ColumnType);
+    DataTable table = parser.parseCSV("data/reviews_cleaned.csv", colTypes, maxStringLengths, nCols);
+    if(!table.wasInitialized()) {
+        std::cout << "Error when loading table from CSV" << std::endl;
         return reviews;
     }
 
-    std::string line;
-    // skip header line
-    std::getline(file, line);
-
-    while (std::getline(file, line)) {
-        std::istringstream ss(line);
+    // convert to linked list
+    for (int i = 0; i < table.getnRows(); i++) {
         Review review;
+        review.productID = table.getStringAt(0, i);
+        review.customerID = table.getStringAt(1, i);
+        review.rating = table.getIntAt(2, i);
+        review.reviewText = table.getStringAt(3, i);
 
-        // parse csv columns
-        std::string ratingStr;
-        std::getline(ss, review.productID, ',');
-        std::getline(ss, review.customerID, ',');
-        std::getline(ss, ratingStr, ',');
-        std::getline(ss, review.reviewText);
-
-        // convert rating string to int
-        try {
-            review.rating = std::stoi(ratingStr);
-            reviews.append(review);
-        } catch (const std::exception& e) {
-            std::cerr << "Error parsing rating: " << ratingStr << std::endl;
-        }
+        reviews.append(review);
     }
 
-    file.close();
     return reviews;
 }
 
