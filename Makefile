@@ -1,3 +1,5 @@
+DEBUG ?= 0
+
 # Platform detection
 UNAME_S := $(shell uname -s)
 
@@ -5,7 +7,6 @@ UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S), Linux)
     CXX := g++
     LDFLAGS :=
-    CXXFLAGS := -Iinclude/
     EXE1 := csvParserTst
     EXE2 := linkedList
 endif
@@ -13,7 +14,6 @@ endif
 ifeq ($(UNAME_S), Darwin)
     CXX := g++
     LDFLAGS :=
-    CXXFLAGS := -Iinclude/
     EXE1 := csvParserTst
     EXE2 := linkedList
 endif
@@ -21,9 +21,14 @@ endif
 ifeq ($(findstring MINGW,$(UNAME_S)),MINGW)
     CXX := mingw32-g++
     LDFLAGS := -lmingw32
-    CXXFLAGS := -Iinclude/ -std=c++17
     EXE1 := csvParserTst.exe
     EXE2 := linkedList.exe
+endif
+
+ifeq ($(DEBUG), 1)
+    CXXFLAGS := -Iinclude/ -std=c++17 -g3 -O0
+else
+    CXXFLAGS := -Iinclude/ -std=c++17 -O2
 endif
 
 # Directories
