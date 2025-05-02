@@ -24,37 +24,43 @@ SRCDIR := src/
 INCLUDEDIR:= include/
 
 
-# Executables
+
+# Source and object files
+SRCS := $(shell find $(SRCDIR) -name '*.cpp')
+OBJS := $(SRCS:%=$(OBJDIR)/%.o)
+
+
+# Targets
 all: datetst.exe dynamicArrayTst.exe csvParserTst.exe linkedListMain.exe
 
 # broken....
 # solution3.exe: $(addprefix $(OBJDIR), solution3.o csvParser.o dataTable.o date.o strUtils.o)
-# 	$(CXX) -g $^ -o $@ $(LDFLAGS)
+# 	$(CXX) $(CXXFLAGS) -g $^ -o $@ $(LDFLAGS)
 #
 # solution2.exe: $(addprefix $(OBJDIR), solution2.o csvParser.o dataTable.o date.o strUtils.o)
-# 	$(CXX) -g $^ -o $@ $(LDFLAGS)
+# 	$(CXX) $(CXXFLAGS) -g $^ -o $@ $(LDFLAGS)
 #
 # solution1.exe: $(addprefix $(OBJDIR), solution1.o csvParser.o dataTable.o date.o strUtils.o)
-# 	$(CXX) -g $^ -o $@ $(LDFLAGS)
+# 	$(CXX) $(CXXFLAGS) -g $^ -o $@ $(LDFLAGS)
 
 datetst.exe: $(addprefix $(OBJDIR), datetst.o date.o)
-	$(CXX) -g $^ -o $@ $(LDFLAGS)
+	$(CXX) $(CXXFLAGS) -g $^ -o $@ $(LDFLAGS)
 
 dynamicArrayTst.exe: $(addprefix $(OBJDIR), dynamicArrayTst.o csvParser.o dataTable.o strUtils.o)
-	$(CXX) -g $^ -o $@ $(LDFLAGS)
+	$(CXX) $(CXXFLAGS) -g $^ -o $@ $(LDFLAGS)
 
 csvParserTst.exe: $(addprefix $(OBJDIR), csvParserTst.o csvParser.o dataTable.o strUtils.o)
-	$(CXX) -g $^ -o $@ $(LDFLAGS)
+	$(CXX) $(CXXFLAGS) -g $^ -o $@ $(LDFLAGS)
 
 linkedListMain.exe: $(addprefix $(OBJDIR), csvParser.o dataTable.o strUtils.o linkedListMain.o)
 	$(CXX) $(CXXFLAGS) -g $^ -o $@ $(LDFLAGS)
 
-
-# Compile
+# Build
 $(OBJDIR)%.o: $(SRCDIR)%.cpp
+	mkdir -p $(dir $@)
 	$(CXX) -I $(INCLUDEDIR) $(CXXFLAGS) -c $< -o $@
 
 
 # Clean
 clean:
-	rm -f $(OBJDIR)*.o $(EXE1) $(EXE2)
+	rm -rf $(OBJDIR)*.o *.exe
