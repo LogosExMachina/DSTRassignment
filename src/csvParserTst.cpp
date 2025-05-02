@@ -21,7 +21,7 @@ int main(int argc, char** argv) {
         -1
     };
 
-    DataTable table = parser.parseCSV("data/tstdata.csv", colTypes, stringLengths, nCols);
+    DataTable table = parser.parseCSV("data/tstdata.csv", colTypes, stringLengths, nCols, 2);
 
     if(!table.wasInitialized()) {
         std::cout << "Error when loading table from CSV" << std::endl;
@@ -35,11 +35,12 @@ int main(int argc, char** argv) {
         colNames[i].c_str() << std::endl;
 
     table.print();
-
+    
+    /*
     for(int i=0; i<table.getnRows(); i++) {
         table.printRowBinary(i);
     }
-
+    */
 
     bool saveSuccess = parser.saveCSV(std::string("data/newdata.csv"), table);
     std::cout << (saveSuccess?
@@ -47,7 +48,5 @@ int main(int argc, char** argv) {
     "> Error when serializing data...")
     << std::endl;
 
-
     return 0;
 }
-

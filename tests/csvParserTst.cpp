@@ -21,7 +21,7 @@ int main(int argc, char** argv) {
             -1
         };
     
-        DataTable table = parser.parseCSV("data/tstdata.csv", colTypes, stringLengths, nCols);
+        DataTable table = parser.parseCSV("data/tstdata.csv", colTypes, stringLengths, nCols, 4);
         
         if(!table.wasInitialized()) {
             std::cout << "Error when loading table from CSV" << std::endl;    

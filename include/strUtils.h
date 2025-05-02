@@ -8,6 +8,18 @@
 #include <cctype>
 #include <algorithm>
 
+// Overload this, later needed by other components
+// like DynamicArray_Unsortable
+bool operator!(const std::string& str);
+
+// Overload this, later needed by other components
+// like DynamicArray_Unsortable
+bool operator==(const std::string&str, const std::nullptr_t& nptr);
+
+// Overload this, later needed by other components
+// like DynamicArray_Unsortable
+bool operator==(const std::nullptr_t& nptr, const std::string&str);
+
 // NOTE: Functions labelled as 'STL' need to 
 // be replaced later on, as per Assignment guidelines.
 // For now, these are used as emergency solutions.
