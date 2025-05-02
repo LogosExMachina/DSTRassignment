@@ -12,7 +12,7 @@
 using namespace std;
 
 // Task 1: Bubble sort for linked list of transactions by date (yyyy-mm-dd format)
-void bubbleSortTransactions(LinkedList<Transaction>& list) {
+void bubbleSortByDate(LinkedList<Transaction>& list) {
     if (list.getSize() < 2) return;
     bool swapped;
     do {
