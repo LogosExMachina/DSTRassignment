@@ -15,7 +15,8 @@ include_directories(
   include/linkedList
 )
 
-add_executable(solution1 src/dynamicArray/solution1.cpp src/shared/csvParser.cpp src/shared/dataTable.cpp src/shared/date.cpp src/shared/strUtils.cpp)
-add_executable(solution2 src/dynamicArray/solution2.cpp src/shared/csvParser.cpp src/shared/dataTable.cpp src/shared/date.cpp src/shared/strUtils.cpp)
-add_executable(solution3 src/dynamicArray/solution3.cpp src/shared/csvParser.cpp src/shared/dataTable.cpp src/shared/date.cpp src/shared/strUtils.cpp)
-add_executable(linkedListMain src/linkedList/solution.cpp src/shared/csvParser.cpp src/shared/dataTable.cpp src/shared/strUtils.cpp)
+add_executable(solution_array_Santiago_1 src/dynamicArray/solution_Santiago_1.cpp src/shared/csvParser.cpp src/shared/dataTable.cpp src/shared/date.cpp src/shared/strUtils.cpp)
+add_executable(solution_array_Santiago_2 src/dynamicArray/solution_Santiago_2.cpp src/shared/csvParser.cpp src/shared/dataTable.cpp src/shared/date.cpp src/shared/strUtils.cpp)
+add_executable(solution_array_Santiago_3 src/dynamicArray/solution_Santiago_3.cpp src/shared/csvParser.cpp src/shared/dataTable.cpp src/shared/date.cpp src/shared/strUtils.cpp)
+add_executable(solution_array_Jaeden src/dynamicArray/solution_Jaeden src/shared/csvParser.cpp src/shared/dataTable.cpp src/shared/date.cpp src/shared/strUtils.cpp)
+add_executable(solution_linkedlist_Wenyi src/linkedList/solution_Wenyi.cpp src/shared/csvParser.cpp src/shared/dataTable.cpp src/shared/strUtils.cpp)
