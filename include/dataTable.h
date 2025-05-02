@@ -39,6 +39,23 @@ class DataTable {
 public:
 
     DataTable();
+    
+    /*
+    // move constructor
+    DataTable(DataTable&& other) noexcept;
+    // move assignment
+    DataTable& operator=(DataTable&& other) noexcept;
+    */
+
+    // Use this function to deallocate all the 
+    // memory allocated data
+    void free();
+
+    // Use this function to redefine the DataTable
+    // dimensions and memory size.
+    // WARNING: This will delete all the previous data stored.
+    bool reallocate(int nRows, int nCols, ColumnType *columnTypes, int *stringLengths);
+
     ~DataTable();
 
     // Numbering starts from 0
@@ -99,7 +116,13 @@ public:
     // Numbering starts from 0
     bool setColumnName(int col, std::string newColumnName);
 
+    ColumnType* getColumnTypes();
+
+    int* getStringLengths();
+
     bool wasInitialized();
+
+    void setVerbose(bool verbose);
 
 private:
     // (-1 and NULL for uninitialized values)
@@ -113,7 +136,10 @@ private:
     int nRows=-1;
     int nCols=-1;
     unsigned char errormask = 0x0; // Use this to track errors
-    std::string *columnNames;
+    std::string *columnNames = 0;
+
+    // Use this to display extra info
+    bool verbose=false;
 
     // String lengths for each column are needed since
     // strings vary in (byte) depth.

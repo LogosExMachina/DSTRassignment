@@ -1,5 +1,22 @@
 #include "strUtils.h"
 
+// Overload this, later needed by other components
+bool operator!(const std::string& str) {
+    return str.empty();
+}
+
+// Overload this, later needed by other components
+// like DynamicArray_Unsortable
+bool operator==(const std::string&str, const std::nullptr_t& nptr) {
+    return str.empty();
+}
+
+// Overload this, later needed by other components
+// like DynamicArray_Unsortable
+bool operator==(const std::nullptr_t& nptr, const std::string&str) {
+    return str.empty();
+}
+
 // Erases the leading whitespace from 'str'
 // Warning: this will modify 'str'
 void trimLeadingInPlace_STL(std::string &str) {
