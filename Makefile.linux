@@ -31,17 +31,17 @@ OBJS := $(SRCS:%=$(OBJDIR)/%.o)
 
 
 # Targets
-all: datetst.exe dynamicArrayTst.exe csvParserTst.exe linkedListMain.exe
+all: solution3.exe solution2.exe solution1.exe datetst.exe dynamicArrayTst.exe csvParserTst.exe linkedListMain.exe
 
 # broken....
-# solution3.exe: $(addprefix $(OBJDIR), solution3.o csvParser.o dataTable.o date.o strUtils.o)
-# 	$(CXX) $(CXXFLAGS) -g $^ -o $@ $(LDFLAGS)
-#
-# solution2.exe: $(addprefix $(OBJDIR), solution2.o csvParser.o dataTable.o date.o strUtils.o)
-# 	$(CXX) $(CXXFLAGS) -g $^ -o $@ $(LDFLAGS)
-#
-# solution1.exe: $(addprefix $(OBJDIR), solution1.o csvParser.o dataTable.o date.o strUtils.o)
-# 	$(CXX) $(CXXFLAGS) -g $^ -o $@ $(LDFLAGS)
+solution3.exe: $(addprefix $(OBJDIR), solution3.o csvParser.o dataTable.o date.o strUtils.o)
+	$(CXX) $(CXXFLAGS) -g $^ -o $@ $(LDFLAGS)
+
+solution2.exe: $(addprefix $(OBJDIR), solution2.o csvParser.o dataTable.o date.o strUtils.o)
+	$(CXX) $(CXXFLAGS) -g $^ -o $@ $(LDFLAGS)
+
+solution1.exe: $(addprefix $(OBJDIR), solution1.o csvParser.o dataTable.o date.o strUtils.o)
+	$(CXX) $(CXXFLAGS) -g $^ -o $@ $(LDFLAGS)
 
 datetst.exe: $(addprefix $(OBJDIR), datetst.o date.o)
 	$(CXX) $(CXXFLAGS) -g $^ -o $@ $(LDFLAGS)
