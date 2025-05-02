@@ -29,7 +29,7 @@ LinkedList<Transaction> loadTransactions(const std::string& filename) {
         16,
     };
     int nCols = sizeof(colTypes)/sizeof(ColumnType);
-    DataTable table = parser.parseCSV("data/transactions_cleaned.csv", colTypes, maxStringLengths, nCols);
+    DataTable table = parser.parseCSV("data/transactions_cleaned.csv", colTypes, maxStringLengths, nCols, -1);
 
     if(!table.wasInitialized()) {
         std::cout << "Error when loading table from CSV" << std::endl;
@@ -70,7 +70,7 @@ LinkedList<Review> loadReviews(const std::string& filename) {
         256,
     };
     int nCols = sizeof(colTypes)/sizeof(ColumnType);
-    DataTable table = parser.parseCSV("data/reviews_cleaned.csv", colTypes, maxStringLengths, nCols);
+    DataTable table = parser.parseCSV("data/reviews_cleaned.csv", colTypes, maxStringLengths, nCols, -1);
     if(!table.wasInitialized()) {
         std::cout << "Error when loading table from CSV" << std::endl;
         return reviews;

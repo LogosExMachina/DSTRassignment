@@ -22,20 +22,20 @@ std::string Date::getAsString() const {
     return out;
 }
 
-bool isLeapYear(int year) 
+bool isLeapYear(int year)
 {
     return (year % 4 == 0) &&
     ((year % 100 != 0) || (year % 400 == 0));
 }
 
-bool isDateValid(const Date &date) 
+bool isDateValid(const Date &date)
 {
     return
     // Validate the months
     (date.month >= 1) && (date.month <= 12) &&
-    
+
     // Validate the days
-    (date.day >= 1) 
+    (date.day >= 1)
     &&
     ((2 == date.month)? // Is month february?
         (isLeapYear(date.year)?
@@ -43,7 +43,7 @@ bool isDateValid(const Date &date)
             : (28 >= date.day) // is not leap year
         )
         : ( // Month is not february...
-            (date.month == 4 || date.month == 6 || 
+            (date.month == 4 || date.month == 6 ||
             date.month == 9 || date.month == 11) ?
                   date.day <= 30 :
                   date.day <= 31
@@ -58,26 +58,26 @@ bool isDateValid(const Date &date)
 
 bool operator<(const Date &date1, const Date &date2)
 {
-    return 
-    (date1.year != date2.year)? // If years are equal, compare months 
-    (date1.year < date2.year) 
+    return
+    (date1.year != date2.year)? // If years are equal, compare months
+    (date1.year < date2.year)
     : (
         (date1.month != date2.month)? // If months are equal, compare days
         (date1.month < date2.month)
-            : (date1.day < date2.day) 
-    ); 
+            : (date1.day < date2.day)
+    );
 }
 
-bool operator>(const Date &date1, const Date &date2) 
-{    
-    return 
-    (date1.year != date2.year)? // If years are equal, compare months 
-    (date1.year > date2.year) 
+bool operator>(const Date &date1, const Date &date2)
+{
+    return
+    (date1.year != date2.year)? // If years are equal, compare months
+    (date1.year > date2.year)
     : (
         (date1.month != date2.month)? // If months are equal, compare days
         (date1.month > date2.month)
-            : (date1.day > date2.day) 
-    ); 
+            : (date1.day > date2.day)
+    );
 }
 
 bool operator==(const Date &date1, const Date &date2) {
@@ -103,7 +103,7 @@ std::stringstream& operator<<(std::stringstream& ss, const Date &date) {
 // Reads a string 'str'  storing a Date in the dd/mm/yyyy format,
 // converts it to a Date struct.
 // If an error occurred, data fields are set to -1.
-Date stdStringToDate(std::string str) 
+Date stdStringToDate(std::string str)
 {
 
     Date output;
@@ -113,7 +113,7 @@ Date stdStringToDate(std::string str)
 
     // dd/mm/yyyy -> 10 characters at least
     if(str.size() < 10) return output;
-    
+
     std::stringstream sstream;
 
     // 0 -> day
@@ -123,12 +123,12 @@ Date stdStringToDate(std::string str)
     for(int i=0; i < str.size(); i++) {
         //if(dataFieldCounter>2) break;
 
-        if('/' == str[i] || '\\' == str[i] || // Separator met 
+        if('/' == str[i] || '\\' == str[i] || // Separator met
             (str.size()-1==i) // last character
         ) {
             switch(dataFieldCounter) {
                 case 0:
-                    output.day = atoi(sstream.str().c_str()); 
+                    output.day = atoi(sstream.str().c_str());
                     break;
                 case 1:
                     output.month = atoi(sstream.str().c_str());
@@ -142,7 +142,7 @@ Date stdStringToDate(std::string str)
             dataFieldCounter++;
         } else {
             sstream << str[i]; // push character to the buffer
-            if (str.size()-1==i+1) 
+            if (str.size()-1==i+1)
                 sstream << str[i+1]; // push also the next character if its the last
         }
     }
