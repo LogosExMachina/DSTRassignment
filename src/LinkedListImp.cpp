@@ -119,7 +119,7 @@ int main() {
     loadTransactions("transactions.csv", transactions);
     cout << "\nTotal Transactions (LinkedList): " << transactions.getSize() << endl;
 
-    bubbleSortTransactions(transactions);
+    bubbleSortByDate(transactions);
     electronicsCreditCardStats(transactions);
 
     loadReviews("reviews.csv", reviews);
