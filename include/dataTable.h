@@ -1,9 +1,9 @@
 #pragma once
-
 #ifndef DATATABLE_H
 #define DATATABLE_H
 
 #include <iostream>
+#include <cstdlib>
 #include <memory.h>
 #include <bitset>
 #include <string>

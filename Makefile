@@ -37,19 +37,34 @@ SRCDIR := src/
 INCLUDEDIR:= C:\Users\Santi\Development\PROJECTS\BareMetal\y2s2\Assignment\include
 
 CXX:= g++
-#CXXFLAGS := -Iinclude/ -std=c++17
+#CXXFLAGS := -std=c++17
 LDFLAGS:= -lmingw32
 
 # All target
 #all: $(EXE1) $(EXE2)
 
-solution3.exe: $(addprefix $(OBJDIR), solution3.o csvParser.o dataTable.o date.o strUtils.o)
+solutionArray_jaden.exe: $(addprefix $(OBJDIR), solutionArray_jaden.o csvParser.o dataTable.o date.o strUtils.o)
 	$(CXX) -g $^ -o $@ $(LDFLAGS)
 
-solution2.exe: $(addprefix $(OBJDIR), solution2.o csvParser.o dataTable.o date.o strUtils.o)
+wenyisolution.exe: $(addprefix $(OBJDIR), linkedListMain.o csvParser.o dataTable.o strUtils.o)
+	$(CXX) -std=c++17 -g $^ -o $@ $(LDFLAGS)
+
+solution3Array_sara.exe: $(addprefix $(OBJDIR), solution3Array_sara.o csvParser.o dataTable.o date.o strUtils.o)
 	$(CXX) -g $^ -o $@ $(LDFLAGS)
 
-solution1.exe: $(addprefix $(OBJDIR), solution1.o csvParser.o dataTable.o date.o strUtils.o)
+solution2Array_sara.exe: $(addprefix $(OBJDIR), solution2Array_sara.o csvParser.o dataTable.o date.o strUtils.o)
+	$(CXX) -g $^ -o $@ $(LDFLAGS)
+
+solution1Array_sara.exe: $(addprefix $(OBJDIR), solution1Array_sara.o csvParser.o dataTable.o date.o strUtils.o)
+	$(CXX) -g $^ -o $@ $(LDFLAGS)
+
+solution3Array_santiago.exe: $(addprefix $(OBJDIR), solution3Array_santiago.o csvParser.o dataTable.o date.o strUtils.o)
+	$(CXX) -g $^ -o $@ $(LDFLAGS)
+
+solution2Array_santiago.exe: $(addprefix $(OBJDIR), solution2Array_santiago.o csvParser.o dataTable.o date.o strUtils.o)
+	$(CXX) -g $^ -o $@ $(LDFLAGS)
+
+solution1Array_santiago.exe: $(addprefix $(OBJDIR), solution1Array_santiago.o csvParser.o dataTable.o date.o strUtils.o)
 	$(CXX) -g $^ -o $@ $(LDFLAGS)
 
 datetst.exe: $(addprefix $(OBJDIR), datetst.o date.o)
@@ -71,7 +86,8 @@ csvParserTst.exe: $(addprefix $(OBJDIR), csvParserTst.o csvParser.o dataTable.o 
 
 # Object compilation rule
 $(OBJDIR)%.o: $(SRCDIR)%.cpp
-	$(CXX) -I $(INCLUDEDIR) $(CXXFLAGS) -c $< -o $@
+	$(CXX) -I $(INCLUDEDIR) -c $^ -o $@ 
+#-std=c++17
 
 # Clean
 clean:

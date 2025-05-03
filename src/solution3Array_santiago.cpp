@@ -1,8 +1,7 @@
 #include <iostream>
 #include "dataTable.h"
 #include "csvParser.h"
-#include "dynamicArray.hpp"
-#include "dynamicArray_unsortable.hpp"
+#include "dynamicArray_sortable.hpp"
 #include "date.hpp"
 #include "strUtils.h"
 
@@ -27,7 +26,9 @@ DynamicArray_Sortable<int> *frequencyArrayPtr;
 // STEP 1: Load the review entries
 void loadReviews() {
 
-    parser.setVerbose(true);
+    parser.setVerbose(false);
+    rawReviews.setVerbose(false);
+    filteredReviews.setVerbose(false);
 
     ColumnType columnTypes[] = {
         ColumnType::STRING, // Product ID
@@ -61,7 +62,7 @@ void loadReviews() {
         "> rawReviews sucessfully initialized":
         "> Error when initializing rawReviews!") 
     << std::endl;
-
+    
 }
 
 // STEP 2: Filter the reviews with 1-star rating
@@ -117,7 +118,7 @@ void filterReviews() {
     }
 
     std::cout << "> Filtered Table loaded" << std::endl;
-    filteredReviews.print();
+    //filteredReviews.print();
 }
 
 // Utility for tokenization in step 3 and 4
@@ -137,7 +138,7 @@ DynamicArray_Unsortable<std::string> tokenizeFromWhitespace(std::string txt) {
             txt.size()-1==c // Its the last character...
         )
         {
-            std::cout << "> Buffer contents = " << ssbuffer.str() << std::endl;
+            //std::cout << "> Buffer contents = " << ssbuffer.str() << std::endl;
 
             std::string bufferstr = std::string(ssbuffer.str());
             if(!(bufferstr.empty())) {
@@ -224,7 +225,7 @@ void displayTop10() {
     int topCounter=1;
     for(
         int i=frequencyArrayPtr->getSize()-1;
-        i >= (frequencyArrayPtr->getSize()-1) - 10;
+        i > (frequencyArrayPtr->getSize()-1) - 10;
         i--
     ) {
         std::cout << "[ Top " << topCounter << " ]: \'" 

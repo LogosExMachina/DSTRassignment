@@ -1,7 +1,7 @@
 #include <iostream>
 #include "dataTable.h"
 #include "csvParser.h"
-#include "dynamicArray.hpp"
+#include "dynamicArray_sortable.hpp"
 #include "date.hpp"
 #include "strUtils.h"
 

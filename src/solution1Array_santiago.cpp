@@ -1,7 +1,7 @@
 #include <iostream>
 #include "dataTable.h"
 #include "csvParser.h"
-#include "dynamicArray.hpp"
+#include "dynamicArray_sortable.hpp"
 #include "date.hpp"
 
 // Solution 1: How can you efficiently sort customer transactions by date
@@ -53,7 +53,7 @@ void loadTransactions() {
         "> Error when initializing rawTransactions!") 
     << std::endl;
 
-    rawTransactions.print();
+    //rawTransactions.print();
     //rawTransactions.printRowBinary(0);
 }
 

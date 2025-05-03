@@ -67,12 +67,12 @@ public:
             delete[] data;
         }
     }
-
+    
     bool wasInitialized() {
         return  
-            NULL != data &&
-            0 < memorySize &&
-            0 <= virtualSize;
+        NULL != data &&
+        0 < memorySize &&
+        0 <= virtualSize;
     }
 
     T popBack() {
@@ -122,11 +122,11 @@ public:
 
     bool insertAt(T newItem, int index) {        
         if (!wasInitialized()) return false;
-
+        
         // Check out of bounds
         if(index<0 || index > (virtualSize-1)) 
-            return false;
-
+        return false;
+        
         // Modify the data
         data[index] = newItem;
         
@@ -135,24 +135,24 @@ public:
     
     T getAt(int index) {
         if (!wasInitialized()) return NULL;
-
+        
         // Check out of bounds
         if(index<0 || index > (virtualSize-1)) 
-            return NULL;
-
+        return NULL;
+        
         return data[index];
     }
-
+    
     bool deleteAt(int index) {
         if(!wasInitialized()) return false;
-
+        
         // Check out of bounds
         if(index<0 || index > (virtualSize-1)) 
-            return false;
-
+        return false;
+        
         // Reset the target item value
         data[index] = 0;
-
+        
         // Translate all the elements one place
         // to the left
         for(int i=index+1; i<virtualSize; i++) {
@@ -161,10 +161,10 @@ public:
 
         // Make sure the rightmost item is reset too
         data[virtualSize-1] = 0;
-
+        
         // Update the size
         virtualSize--; 
-
+        
         return true;
     }
 
@@ -222,15 +222,16 @@ public:
         return sstream.str();
     }
 
+
     int getSize() {
         if(!wasInitialized()) return 0;
         return this->virtualSize;
     }
-
+    
     void setVerbose(bool verbose) {
         this->verbose=verbose;
     }
-
+    
     void setAutoDealloc(bool autoDealloc) {
         this->autoDealloc=autoDealloc;
     }

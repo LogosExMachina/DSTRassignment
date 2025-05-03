@@ -56,7 +56,8 @@ public:
     // Warning: Deallocates the data buffer
     void free() {
         if(NULL != data) {
-            std::cout << "> Deallocating Dynamic Array" << std::endl;
+            std::cout << "> Deallocating Dynamic Array (name = " <<
+            this->name << ")" << std::endl;
             delete[] data;
         }
     }
@@ -238,6 +239,10 @@ public:
         this->autoDealloc=autoDealloc;
     }
 
+    void setName(std::string name) {
+        this->name=name;
+    }
+
     // Function to swap two elements from another (external) DynamicArray
     void externalSwap(int indexA, int indexB) {
         T& a = data[indexA];
@@ -274,6 +279,9 @@ private:
     // If this is true, the data is deallocated
     // through the destructor
     bool autoDealloc=true;
+
+    // Identifier used for debugging
+    std::string name="NO_NAME";
 
     // SORTING UTILITY FUNCTIONS
 

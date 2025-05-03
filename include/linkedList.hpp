@@ -178,7 +178,8 @@ private:
         if (b == nullptr) return a;
 
         // compare
-        if constexpr (std::is_same<T, Transaction>::value) {
+        if constexpr
+        (std::is_same<T, Transaction>::value) {
             Transaction& transA = static_cast<Node<Transaction>*>(a)->data;
             Transaction& transB = static_cast<Node<Transaction>*>(b)->data;
 
@@ -197,7 +198,8 @@ private:
             }
         }
 
-        else if constexpr (std::is_same<T, WordFrequency>::value) {
+        else if constexpr 
+        (std::is_same<T, WordFrequency>::value) {
             WordFrequency& wfA = static_cast<Node<WordFrequency>*>(a)->data;
             WordFrequency& wfB = static_cast<Node<WordFrequency>*>(b)->data;
 
