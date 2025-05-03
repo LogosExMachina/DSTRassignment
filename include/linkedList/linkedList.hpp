@@ -117,7 +117,31 @@ struct WordFrequency {
     std::string word;
     int frequency;
 
+    void operator=(const WordFrequency& other) {
+        word = other.word;
+        frequency = other.frequency;
+    }
+
+    bool operator==(const WordFrequency& other) const {
+        return word == other.word && frequency == other.frequency;
+    }
+
+    bool operator!=(const WordFrequency& other) const {
+        return !(*this == other);
+    }
+
+    void operator++() {
+        frequency++;
+    }
+
+    friend std::ostream& operator<<(std::ostream& os, const WordFrequency& wordFrequency) {
+      os << "Word: " << wordFrequency.word
+         << ", Frequency: " << wordFrequency.frequency;
+      return os;
+    }
+
     WordFrequency(const std::string& w, int f) : word(w), frequency(f) {}
+    WordFrequency() : word(""), frequency(0) {}
 };
 
 // node
