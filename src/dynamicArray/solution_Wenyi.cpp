@@ -11,7 +11,6 @@ using namespace std;
 // load
 DynamicArray_Unsortable<Transaction> loadTransactions(const string filename) {
     DynamicArray_Unsortable<Transaction> transactions;
-    transactions.setVerbose(false);
 
     // santi's csv parser
     CSVParser parser;
@@ -101,7 +100,6 @@ DynamicArray_Unsortable<T> merge(DynamicArray_Unsortable<T>& left, DynamicArray_
     if (right.getSize() == 0) return left;
 
     DynamicArray_Unsortable<T> result(left.getSize() + right.getSize());
-    result.setVerbose(false);
 
     int i = 0, j = 0;
     while (i < left.getSize() && j < right.getSize()) {
@@ -127,8 +125,6 @@ DynamicArray_Unsortable<T> mergeSort(DynamicArray_Unsortable<T>& data, bool (*cm
     int mid = size / 2;
     DynamicArray_Unsortable<T> left(mid);
     DynamicArray_Unsortable<T> right(size - mid);
-    left.setVerbose(false);
-    right.setVerbose(false);
 
     for (int i = 0; i < mid; i++) left.pushBack(data.getAt(i));
     for (int i = mid; i < size; i++) right.pushBack(data.getAt(i));
@@ -144,7 +140,6 @@ DynamicArray_Unsortable<T> mergeSort(DynamicArray_Unsortable<T>& data, bool (*cm
 template <typename T>
 DynamicArray_Unsortable<T> filter(DynamicArray_Unsortable<T>& data, bool (*cmp)(const T&, const T&)) {
     DynamicArray_Unsortable<T> filtered;
-    filtered.setVerbose(false);
 
     for (int i = 0; i < data.getSize(); i++) {
         if (cmp(data.getAt(i), T())) {
@@ -158,7 +153,6 @@ DynamicArray_Unsortable<T> filter(DynamicArray_Unsortable<T>& data, bool (*cmp)(
 // word
 DynamicArray_Unsortable<WordFrequency> analyzeReviewWords(DynamicArray_Unsortable<Review>& reviews) {
     DynamicArray_Unsortable<WordFrequency> wordFrequencies;
-    wordFrequencies.setVerbose(false);
 
     int size = reviews.getSize();
     for (int i = 0; i < size; i++) {
