@@ -27,7 +27,7 @@ DataTable::DataTable(DataTable&& other) noexcept {
 
 // move assignment
 DataTable& DataTable::operator=(DataTable&& other) noexcept {
-    if (this != &other) {        
+    if (this != &other) {
         columnNames = other.columnNames;
         dataBuffer = other.dataBuffer;
         stringLengths = other.stringLengths;
@@ -40,7 +40,7 @@ DataTable& DataTable::operator=(DataTable&& other) noexcept {
         delete[] dataBuffer;
         delete[] stringLengths;
         delete[] columnTypes;
-        
+
         other.columnNames = nullptr;
         other.dataBuffer = nullptr;
         other.stringLengths = nullptr;
@@ -57,25 +57,25 @@ DataTable& DataTable::operator=(DataTable&& other) noexcept {
 void DataTable::free() {
     if(verbose)
         std::cout << "> Destroying DataTable..." << std::endl;
-    
+
     if(columnNames) {
         if(verbose)
             std::cout << "\t> Destroying DataTable::columnNames..." << std::endl;
         delete[] columnNames;
     }
-    
+
     if(dataBuffer) {
         if(verbose)
             std::cout << "\t> Destroying DataTable::dataBuffer..." << std::endl;
         delete[] dataBuffer;
     }
-    
+
     if(stringLengths) {
         if(verbose)
             std::cout << "\t> Destroying DataTable::stringLengths..." << std::endl;
         delete[] stringLengths;
     }
-    
+
     if(columnTypes) {
         if(verbose)
             std::cout << "\t> Destroying DataTable::columnTypes..." << std::endl;
@@ -114,7 +114,7 @@ bool DataTable::reallocate(int nRows, int nCols, ColumnType *columnTypes, int *s
             case ColumnType::STRING:
                 hasStrings=true;
                 rowByteSize+=
-                    (NULL>=stringLengths)?
+                    (stringLengths==nullptr)?
                     0 : (int)stringLengths[i];
                     //sizeof(std::string);
                 break;
@@ -137,11 +137,11 @@ bool DataTable::reallocate(int nRows, int nCols, ColumnType *columnTypes, int *s
     // Initialize the column name array
     std::string *colNames = new std::string[nCols];
     for(int i=0; i<nCols; i++) {
-        colNames[i] = std::string(""); 
+        colNames[i] = std::string("");
         // Set this name by default
         colNames[i].append("ATTR");
         char conversionBuffer[16];
-        itoa(i, conversionBuffer, 10); // Convert base 10 integer to string (C way)
+        snprintf(conversionBuffer, sizeof(conversionBuffer), "%d", i);
         colNames[i].append(conversionBuffer);
     }
     setColumnNames(colNames);
@@ -164,7 +164,7 @@ bool DataTable::reallocate(int nRows, int nCols, ColumnType *columnTypes, int *s
 
     this->columnTypes = new ColumnType[nCols];
     memcpy(this->columnTypes, columnTypes, nCols*sizeof(ColumnType));
-    
+
     return true; // success
 }
 
@@ -377,12 +377,12 @@ bool DataTable::setBoolAt(std::string colName, int rowNum, bool newBool) {
 }
 
 void DataTable::print() {
-    
+
     // Print column names first
     std::cout << "| ";
-    for(int i=0;i<nCols;i++) 
-        std::cout << 
-            //((columnNames[i].empty())? "NO_NAME": columnNames[i]) 
+    for(int i=0;i<nCols;i++)
+        std::cout <<
+            //((columnNames[i].empty())? "NO_NAME": columnNames[i])
             columnNames[i]
             << " | ";
     std::cout << std::endl;
@@ -459,7 +459,7 @@ std::string DataTable::getColumnName(int col) {
 // Returns true if successful, false otherwise.
 bool DataTable::setColumnNames(std::string *newColumnNames) {
     if(!newColumnNames) return false;
-    
+
     this->columnNames=newColumnNames;
     return true;
 }
@@ -468,7 +468,7 @@ bool DataTable::setColumnNames(std::string *newColumnNames) {
 // Numbering starts from 0
 bool DataTable::setColumnName(int col, std::string newColumnName) {
     //if(col<0 || col>nCols-1) return false;
-    
+
     this->columnNames[col] = std::string(newColumnName);
     return true;
 }

@@ -35,7 +35,7 @@ int main(int argc, char** argv) {
         colNames[i].c_str() << std::endl;
 
     table.print();
-    
+
     /*
     for(int i=0; i<table.getnRows(); i++) {
         table.printRowBinary(i);
