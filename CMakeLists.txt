@@ -19,4 +19,7 @@ add_executable(solution_array_Santiago_1 src/dynamicArray/solution_Santiago_1.cp
 add_executable(solution_array_Santiago_2 src/dynamicArray/solution_Santiago_2.cpp src/shared/csvParser.cpp src/shared/dataTable.cpp src/shared/date.cpp src/shared/strUtils.cpp)
 add_executable(solution_array_Santiago_3 src/dynamicArray/solution_Santiago_3.cpp src/shared/csvParser.cpp src/shared/dataTable.cpp src/shared/date.cpp src/shared/strUtils.cpp)
 add_executable(solution_array_Jaeden src/dynamicArray/solution_Jaeden src/shared/csvParser.cpp src/shared/dataTable.cpp src/shared/date.cpp src/shared/strUtils.cpp)
+add_executable(solution_array_Wenyi src/dynamicArray/solution_Wenyi src/shared/csvParser.cpp src/shared/dataTable.cpp src/shared/date.cpp src/shared/strUtils.cpp)
+
+# add_executable(solution_linkedlist_Jaeden src/linkedList/solution_Jaeden.cpp src/shared/csvParser.cpp src/shared/dataTable.cpp src/shared/strUtils.cpp)
 add_executable(solution_linkedlist_Wenyi src/linkedList/solution_Wenyi.cpp src/shared/csvParser.cpp src/shared/dataTable.cpp src/shared/strUtils.cpp)
