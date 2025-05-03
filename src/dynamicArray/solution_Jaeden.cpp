@@ -92,28 +92,26 @@ int main() {
     parser.setVerbose(false);
 
     // Parse transactions
-    ColumnType transTypes[] = {ColumnType::STRING, ColumnType::STRING, ColumnType::STRING,
-                               ColumnType::DOUBLE, ColumnType::STRING, ColumnType::STRING};
-    int transStrLens[] = {16, 32, 16, -1, 16, 32};
-    int nColTrans = sizeof(transTypes)/sizeof(ColumnType);
-    DataTable transTable = parser.parseCSV("transactions.csv", transTypes, transStrLens, nColTrans, -1);
+    ColumnType transTypes[] = {ColumnType::STRING, ColumnType::STRING, ColumnType::DOUBLE,
+                               ColumnType::STRING, ColumnType::STRING, ColumnType::STRING};
+    int transStrLens[] = {20, 50, -1, 15, 20, 20};
+    DataTable transTable = parser.parseCSV("transactions.csv", transTypes, transStrLens, 6, 10000);
 
     // Task 1: Sort by date
     int dateCol = 3; // index of date
     bubbleSortByDate(transTable, dateCol);
     cout << "\nTotal Transactions (Array): " << transTable.getnRows() << endl;
 
-    // Task 2: Percentage of Electronics purchases by Credit Card
+    // Task 2
     int catCol = 4, payCol = 5;
     electronicsCreditCardStats(transTable, catCol, payCol);
 
     // Parse reviews
     ColumnType revTypes[] = {ColumnType::STRING, ColumnType::STRING, ColumnType::INT, ColumnType::STRING};
-    int revStrLens[] = {16, 16, -1, 92};
-    int nColRev = sizeof(revTypes)/sizeof(ColumnType);
-    DataTable reviewTable = parser.parseCSV("reviews.csv", revTypes, revStrLens, nColRev, -1);
+    int revStrLens[] = {20, 20, -1, 200};
+    DataTable reviewTable = parser.parseCSV("reviews.csv", revTypes, revStrLens, 4, 10000);
 
-    // Task 3: Most Frequent Words in 1-Star Reviews
+    // Task 3
     analyze1StarReviews(reviewTable, 2, 3);
 
     return 0;
