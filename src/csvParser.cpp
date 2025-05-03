@@ -1,4 +1,4 @@
-#include "csvParser.h"
+#include "shared/csvParser.h"
 
 CSVParser::CSVParser() {}
 CSVParser::~CSVParser() {}
@@ -59,7 +59,7 @@ DataTable CSVParser::parseCSV(std::string filePath, ColumnType colTypes[], int s
             case ColumnType::STRING:
                 hasStrings=true;
                 rowByteSize+=
-                    (stringLengths==nullptr)?
+                    (NULL==stringLengths)?
                     0 : (int)stringLengths[i];
                     //sizeof(std::string);
                 break;
@@ -83,13 +83,13 @@ DataTable CSVParser::parseCSV(std::string filePath, ColumnType colTypes[], int s
     // Make sure every string reserves 32 bytes (test?)
     /*
     for(int i=0; i<nColTypes; i++) {
-        colNames[i] = std::string();
+        colNames[i] = std::string(); 
         colNames[i].reserve(32);
-    }
+    } 
     */
     output.setColumnNames(colNames);
 
-    // Some text might be in between quotes given that
+    // Some text might be in between quotes given that 
     // it can contain a comma which is not a csv separator
     bool betweenQuotes = false;
 
@@ -99,8 +99,8 @@ DataTable CSVParser::parseCSV(std::string filePath, ColumnType colTypes[], int s
     int colCounter = 0;
     for(int c=0;c<row.size();c++) {
         if(
-            (','==row[c] &&     // (Char is a comma AND...
-            !betweenQuotes) ||  // Quotation is closed) OR...
+            (','==row[c] &&     // (Char is a comma AND... 
+            !betweenQuotes) ||  // Quotation is closed) OR...       
             row.size()-1==c     // its the last character ...
         ) {
             // Make sure the last char is included
@@ -123,7 +123,7 @@ DataTable CSVParser::parseCSV(std::string filePath, ColumnType colTypes[], int s
 
     // Calculate the number of remaining rows
     while(std::getline(fileHandle, row)) nRows++;
-
+    
     // Update nRows according to reading limit
     nRows = ((-1==rowLimit) ? nRows : rowLimit);
 
@@ -165,14 +165,14 @@ DataTable CSVParser::parseCSV(std::string filePath, ColumnType colTypes[], int s
     colCounter=0;
     //std::string colContent;
     int colOffsetBytes=0;
-
-    // Some text might be in between quotes given that
+    
+    // Some text might be in between quotes given that 
     // it can contain a comma which is not a csv separator
-    betweenQuotes = false; // (reset this)
-
-    // Do this to ensure that the stringstream can handle
+    betweenQuotes = false; // (reset this) 
+    
+    // Do this to ensure that the stringstream can handle 
     // long entries without memory corruption
-    //std::string ssbufferAllocation = "";
+    //std::string ssbufferAllocation = ""; 
     //ssbufferAllocation.reserve(rowByteSize);
 
     //ssbuffer = std::stringstream(ssbufferAllocation); // Reset buffer
@@ -189,13 +189,13 @@ DataTable CSVParser::parseCSV(std::string filePath, ColumnType colTypes[], int s
             std::cout << "Row [" << rowCounter << "] = " << row << std::endl;
         }
 
-        // Do this to ensure that the stringstream can handle
+        // Do this to ensure that the stringstream can handle 
         // long entries without memory corruption
-        std::string ssbufferAllocation = "";
+        std::string ssbufferAllocation = ""; 
         ssbufferAllocation.reserve(rowByteSize);
 
         // Create a LOCAL stringstream inside the loop iteration
-        // of the specific row to avoid corruption in the long term
+        // of the specific row to avoid corruption in the long term 
         std::stringstream ssbuffer = std::stringstream(ssbufferAllocation);
 
         colCounter=0;
@@ -208,7 +208,7 @@ DataTable CSVParser::parseCSV(std::string filePath, ColumnType colTypes[], int s
                 row.size()-1==c         // its the last character ...
             ) {
                 // Make sure the last char is included (and its not a '"' char)
-                if(row.size()-1==c && ','!=row[c] && '\"'!=row[c])
+                if(row.size()-1==c && ','!=row[c] && '\"'!=row[c]) 
                     ssbuffer << row[c];
 
                 // DEBUGGING, maybe do under verbose mode later
@@ -270,12 +270,15 @@ DataTable CSVParser::parseCSV(std::string filePath, ColumnType colTypes[], int s
                         break;
                     }
 
-                    std::string parsedString = ssbuffer.str();
+                    std::string parsedString = !(ssbuffer.str().empty()) ? 
+                    ssbuffer.str() :
+                    " ";
+
                     trimLeadingInPlace_STL(parsedString);
                     trimTrailingInPlace_STL(parsedString);
-                    const char* stringContents = parsedString.c_str();
+                    //const char* stringContents = parsedString.c_str();
 
-                    output.setStringAt(colCounter, rowCounter, stringContents);
+                    output.setStringAt(colCounter, rowCounter, parsedString);//stringContents);
 
                     // DEBUGGING, maybe do under verbose mode later
                     if(verbose)
@@ -306,16 +309,16 @@ DataTable CSVParser::parseCSV(std::string filePath, ColumnType colTypes[], int s
 
                 ssbuffer = std::stringstream(ssbufferAllocation);
                 colCounter++;
-
+            
             } else if(row[c] == '\"') {
                 betweenQuotes=!betweenQuotes; // Toggle this
             } else {
                 if(
                     // Avoid this specific case (Adding a comma value
                     // to the buffer when the value to parse is not a string)
-                    !(','==row[c] && betweenQuotes
+                    !(','==row[c] && betweenQuotes 
                     && ColumnType::STRING != colTypes[colCounter])
-                    &&
+                    && 
                     ('\"' != row[c]) // also avoid adding quotations
                 )
                 ssbuffer << row[c]; // Push char to buffer
@@ -374,7 +377,7 @@ bool CSVParser::saveCSV(std::string filePath, DataTable table) {
                 } break;
                 case ColumnType::STRING: {
                     std::string strVal = table.getStringAt(j,i);
-                    // TODO HERE!! : Check if the string has commas.
+                    // TODO HERE!! : Check if the string has commas. 
                     // If it has, then write it to the file using double
                     // quotation marks.
                     fileHandle << strVal;
@@ -389,7 +392,7 @@ bool CSVParser::saveCSV(std::string filePath, DataTable table) {
         }
         fileHandle << "\n"; // go to next line
     }
-
+    
     // Close the file handle
     fileHandle.close();
     return true; // Successfuly saved

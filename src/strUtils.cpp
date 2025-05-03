@@ -1,4 +1,4 @@
-#include "strUtils.h"
+#include "shared/strUtils.h"
 
 // Overload this, later needed by other components
 bool operator!(const std::string& str) {

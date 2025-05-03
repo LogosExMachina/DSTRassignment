@@ -1,6 +1,6 @@
-#include "csvParser.h"
-#include "dataTable.h"
-#include "linkedList.hpp"
+#include "shared/csvParser.h"
+#include "shared/dataTable.h"
+#include "linkedList/linkedList.hpp"
 
 #include <chrono>
 #include <algorithm>

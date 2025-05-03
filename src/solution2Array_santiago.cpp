@@ -11,7 +11,7 @@
 // based on category and payment method.)
 
 CSVParser parser;
-DataTable rawTransactions, filteredTransactions;
+DataTable rawTransactions;// filteredTransactions;
 DynamicArray_Sortable<int> electronicsIDs;
 int nElectronics=0, nCreditCardPurchases=0;
 const int CATEGORY_COLUMN_INDEX = 2;
@@ -37,7 +37,7 @@ void loadTransactions() {
         16, // Date
         32 // Payment Method
     };
-
+    
     int nCols = sizeof(columnTypes)/sizeof(ColumnType);
 
     rawTransactions

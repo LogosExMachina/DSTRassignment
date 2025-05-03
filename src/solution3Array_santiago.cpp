@@ -2,10 +2,10 @@
 #include "dataTable.h"
 #include "csvParser.h"
 #include "dynamicArray_sortable.hpp"
-<<<<<<<< HEAD:src/solution3Array_santiago.cpp
-========
+//<<<<<<<< HEAD:src/solution3Array_santiago.cpp
+//========
 #include "dynamicArray_unsortable.hpp"
->>>>>>>> f1cb23f893c37a6ca6d3781c707fb8b7b97e4087:src/dynamicArray/solution_Santiago_3.cpp
+//>>>>>>>> f1cb23f893c37a6ca6d3781c707fb8b7b97e4087:src/dynamicArray/solution_Santiago_3.cpp
 #include "date.hpp"
 #include "strUtils.h"
 

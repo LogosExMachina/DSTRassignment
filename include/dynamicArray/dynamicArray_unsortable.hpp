@@ -10,7 +10,7 @@
 
 // this is to make sure that the Date::operator<< 
 // overload reference is found! 
-#include "date.hpp"
+#include "shared/date.hpp"
 
 // 5 items at least
 #define INITIAL_ARRAY_SIZE 5

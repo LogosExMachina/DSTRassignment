@@ -46,8 +46,8 @@ LDFLAGS:= -lmingw32
 solutionArray_jaden.exe: $(addprefix $(OBJDIR), solutionArray_jaden.o csvParser.o dataTable.o date.o strUtils.o)
 	$(CXX) -g $^ -o $@ $(LDFLAGS)
 
-wenyisolution.exe: $(addprefix $(OBJDIR), linkedListMain.o csvParser.o dataTable.o strUtils.o)
-	$(CXX) -std=c++17 -g $^ -o $@ $(LDFLAGS)
+solutionLL_wenyi.exe: $(addprefix $(OBJDIR), solutionLL_wenyi.o csvParser.o dataTable.o strUtils.o)
+	$(CXX) -std=c++17 -static -static-libgcc -static-libstdc++ -Os -g $^ -o $@ $(LDFLAGS)
 
 solution3Array_sara.exe: $(addprefix $(OBJDIR), solution3Array_sara.o csvParser.o dataTable.o date.o strUtils.o)
 	$(CXX) -g $^ -o $@ $(LDFLAGS)
@@ -85,9 +85,17 @@ csvParserTst.exe: $(addprefix $(OBJDIR), csvParserTst.o csvParser.o dataTable.o 
 # 	$(CXX) $(CXXFLAGS) -g $^ -o $@ $(LDFLAGS)
 
 # Object compilation rule
-$(OBJDIR)%.o: $(SRCDIR)%.cpp
+$(OBJDIR)%.o: $(SRCDIR)/%.cpp
 	$(CXX) -I $(INCLUDEDIR) -c $^ -o $@ 
 #-std=c++17
+
+# Object compilation rule
+#$(OBJDIR)%.o: $(SRCDIR)/shared/%.cpp
+#	$(CXX) -I $(INCLUDEDIR) -c $^ -o $@ 
+
+# Object compilation rule
+#$(OBJDIR)%.o: $(SRCDIR)/linkedList/%.cpp
+#	$(CXX) -I $(INCLUDEDIR) -c $^ -o $@ 
 
 # Clean
 clean:

@@ -1,8 +1,8 @@
 #include <iostream>
-#include "dataTable.h"
-#include "csvParser.h"
-#include "dynamicArray_sortable.hpp"
-#include "date.hpp"
+#include "shared/dataTable.h"
+#include "shared/csvParser.h"
+#include "dynamicArray/dynamicArray_sortable.hpp"
+#include "shared/date.hpp"
 
 // Solution 1: How can you efficiently sort customer transactions by date
 // and display the total number of transactions in both datasets?
@@ -15,6 +15,8 @@ const char *CUSTID_PREFIX = "CUST";
 
 // SETUP 1: Load the CSV data into a DataTable
 void loadTransactions() {
+
+    parser.setVerbose(true);
 
     ColumnType columnTypes[] = {
         ColumnType::STRING, // Customer ID
@@ -43,8 +45,8 @@ void loadTransactions() {
         columnTypes,
         stringLengths,
         nCols,
-        //10
-        -1 // Load ALL entries
+        10
+        //-1 // Load ALL entries
     );
 
     std::cout <<
@@ -104,7 +106,7 @@ void sortTransactionsByDate() {
     int nRows = rawTransactions.getnRows();
 
     DynamicArray_Sortable<int> transacIdArr = DynamicArray_Sortable<int>();
-    DynamicArray_Sortable<int> customerIdArr = DynamicArray_Sortable<int>();
+    //DynamicArray_Sortable<int> customerIdArr = DynamicArray_Sortable<int>();
     DynamicArray_Sortable<Date> dateArr = DynamicArray_Sortable<Date>();
 
     //dateArr.setVerbose(true);
@@ -113,6 +115,7 @@ void sortTransactionsByDate() {
     // Generate the transacId column
     for(int i=0; i<nRows; i++) transacIdArr.pushBack(i);
 
+    /*
     // Extract the 'Customer ID' column from the DataTable
     for(int i=0; i<nRows; i++) {
         int convertedId = convertCustomerID(
@@ -121,6 +124,7 @@ void sortTransactionsByDate() {
         //std::cout << "> ID [" << i << "] = " << convertedId << std::endl;
         customerIdArr.pushBack(convertedId);
     }
+    */
 
     // Extract the 'Date' column from the DataTable
     for(int i=0; i<nRows; i++) {

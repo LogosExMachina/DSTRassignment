@@ -3,16 +3,11 @@
 #define DYNAMIC_ARRAY_HPP
 
 #include <iostream>
+#include <cmath>
 #include <sstream>
 #include <string>
 
-//#include <vector> // REMOVE THIS !!
-
 #include "dynamicArray_unsortable.hpp"
-
-// this is to make sure that the Date::operator<< 
-// overload reference is found! 
-#include "date.hpp"
 
 // 5 items at least
 #define INITIAL_ARRAY_SIZE 5
@@ -134,11 +129,11 @@ public:
     }
     
     T getAt(int index) {
-        if (!wasInitialized()) return NULL;
+        if (!wasInitialized()) return T();
         
         // Check out of bounds
         if(index<0 || index > (virtualSize-1)) 
-        return NULL;
+            return T();
         
         return data[index];
     }
@@ -324,7 +319,98 @@ public:
     }
 
     bool bubblesort() {
+        if(!wasInitialized()) return false;
+
+        int n = virtualSize;
+        for(int i=0; i< n - 1 ; i++) {
+            for(int j=0; j < n - i - 1; j++) {
+                T &t1 = data[j];
+                T &t2 = data[j+1];
+                if(t2 < t1) {
+                    internalSwap(data[j], data[j+1]);
+                }
+            }
+        }
+        return true;
+    }
+
+    bool mergesort() {
+        if(!wasInitialized()) return false;
+
+        internalMergeSort(0, virtualSize-1);
         
+        return true;
+    }
+    
+    void insertionSort()
+    {
+        for (int i = 1; i < virtualSize; ++i) {
+            int key = data[i];
+            int j = i - 1;
+
+            // Move elements of arr[0..i-1], that are
+            // greater than key, to one position ahead
+            // of their current position
+            while (j >= 0 && data[j] > key) {
+                data[j + 1] = data[j];
+                j = j - 1;
+            }
+            data[j + 1] = key;
+        }
+    }
+    
+    template<typename P>
+    void insertionSort(DynamicArray_Sortable<P> &parallelArray)
+    {
+        for (int i = 1; i < virtualSize; ++i) {
+            T key = data[i];
+            P parallelKey = parallelArray.getAt(i);
+            int j = i - 1;
+
+            // Move elements of arr[0..i-1], that are
+            // greater than key, to one position ahead
+            // of their current position
+            while (j >= 0 && data[j] > key) {
+                data[j + 1] = data[j];
+                P jParallelItem = parallelArray.getAt(j);
+                parallelArray.insertAt(jParallelItem, j);
+
+                j = j - 1;
+            }
+
+            data[j + 1] = key;
+            parallelArray.insertAt(parallelKey, j+1);
+        }
+    }
+
+    bool bucketSort(int n) {
+        // 1) Create n empty buckets
+        DynamicArray_Sortable<T> b[n];
+
+        // 2) Put array elements int different buckets
+        for (int i = 0; i < n; i++) {
+            int bi = n * data[i];
+            b[i] = DynamicArray_Sortable<T>();
+            b->setAutoDealloc(false);
+            b[bi].pushBack(data[i]);
+        }
+
+        // 3) Sort individual buckets using insertion sort
+        for (int i = 0; i < n; i++) {
+            b[i].quicksort(0, b[i].getSize()-1);
+        }
+        
+        // 4) Concatenate all buckets into arr[]
+        int index = 0;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < b[i].getSize(); j++) {
+                data[index++] = b[i].getAt(j);
+            }
+        }
+
+        // 5) Deallocate buckets
+        for(int i=0; i<n; i++)
+            b[i].free();
     }
 
     // ########### SEARCH FUNCTIONS ###########
@@ -343,6 +429,127 @@ public:
             }
         }
         return targetID;
+    }
+
+    // Iterative approach to binary search
+    // Returns the index of the first element matching the target
+    // (or -1 if it was not found)
+    int binarySearch(T elem) {
+        if(!wasInitialized()) return -1;
+
+        int low = 0;
+        int high = virtualSize-1;
+
+        while (low <= high) {
+            int mid = low + (high - low) / 2;
+    
+            // Check if x is present at mid
+            if (data[mid] == elem)
+                return mid;
+    
+            // If x greater, ignore left half
+            if (data[mid] < elem)
+                low = mid + 1;
+    
+            // If x is smaller, ignore right half
+            else
+                high = mid - 1;
+        }
+    
+        // If we reach here, then element was not present
+        return -1;
+    }
+
+    // Returns the index of the first element matching the target
+    int jumpSearch(T elem) {
+        // Finding block size to be jumped
+        int step = sqrt(virtualSize);
+
+        // Finding the block where element is
+        // present (if it is present)
+        int prev = 0;
+        while (data[std::min(step, virtualSize)-1] < elem)
+        {
+            prev = step;
+            step += sqrt(virtualSize);
+            if (prev >= virtualSize)
+                return -1;
+        }
+    
+        // Doing a linear search for x in block
+        // beginning with prev.
+        while (data[prev] < elem)
+        {
+            prev++;
+    
+            // If we reached next block or end of
+            // array, element is not present.
+            if (prev == std::min(step, virtualSize))
+                return -1;
+        }
+        // If element is found
+        if (data[prev] == elem)
+            return prev;
+
+        // Else, not found
+        return -1;  
+    }
+
+    int interpolationSearch(T elem) {
+        int pos;
+
+        int low = 0;
+        int high = virtualSize-1;
+
+        // Since array is sorted, an element present
+        // in array must be in range defined by corner
+        if (low <= high && elem >= data[low] && elem <= data[high]) {
+            // Probing the position with keeping
+            // uniform distribution in mind.
+            pos = low
+                + (((double)(high - low) / (data[high] - data[low]))
+                    * (elem - data[low]));
+
+            // Condition of target found
+            if (data[pos] == elem)
+                return pos;
+
+            // If x is larger, x is in right sub array
+            if (data[pos] < elem)
+                return interpolationSearch(pos + 1, high, elem);
+
+            // If x is smaller, x is in left sub array
+            if (data[pos] > elem)
+                return interpolationSearch(low, pos - 1, elem);
+        }
+        return -1; // Not found...
+    }
+
+    int interpolationSearch(int low, int high, T elem) {
+        int pos;
+
+        // Since array is sorted, an element present
+        // in array must be in range defined by corner
+        if (low <= high && elem >= data[low] && elem <= data[high]) {
+            // Probing the position with keeping
+            // uniform distribution in mind.
+            pos = low
+                + (((double)(high - low) / (data[high] - data[low]))
+                    * (elem - data[low]));
+
+            // Condition of target found
+            if (data[pos] == elem)
+                return pos;
+
+            // If x is larger, x is in right sub array
+            if (data[pos] < elem)
+                return interpolationSearch(pos + 1, high, elem);
+
+            // If x is smaller, x is in left sub array
+            if (data[pos] > elem)
+                return interpolationSearch(low, pos - 1, elem);
+        }
+        return -1; // Not found...
     }
 
 private:
@@ -382,7 +589,7 @@ private:
         }
         internalSwap(arr[i + 1], arr[high]);  // Place pivot in the correct position
         return i + 1;  // Return the pivot index
-    }
+    }  
     
     // Partition function: Places the pivot in the correct position.
     // parallelArray -> used to sort another array with the
@@ -458,6 +665,74 @@ private:
         
         return i + 1;  // Return the pivot index
     }
+
+    void merge(int left, int mid, int right) {
+        int n1 = mid - left + 1;
+        int n2 = right - mid;
+
+        // Create temp arrays
+        T* L = new T(n1);
+        T* R = new T(n2);
+
+        // Copy data to temp arrays L[] and R[]
+        for (int i = 0; i < n1; i++)
+            L[i] = data[left + i];
+        for (int j = 0; j < n2; j++)
+            R[j] = data[mid + 1 + j];
+
+        int i = 0, j = 0;
+        int k = left;
+
+        // Merge the temp arrays back 
+        // into data [left..right]
+        while (i < n1 && j < n2) {
+            if (L[i] <= R[j]) {
+                data[k] = L[i];
+                i++;
+            }
+            else {
+                data[k] = R[j];
+                j++;
+            }
+            k++;
+        }
+
+        // Copy the remaining elements of L[], 
+        // if there are any
+        while (i < n1) {
+            data[k] = L[i];
+            i++;
+            k++;
+        }
+
+        // Copy the remaining elements of R[], 
+        // if there are any
+        while (j < n2) {
+            data[k] = R[j];
+            j++;
+            k++;
+        }
+        
+        // DO NOT FORGET...
+        delete[] L;
+        delete[] R;
+    }
+
+    // begin is for left index and end is right index
+    // of the sub-array of arr to be sorted
+    void internalMergeSort(int left, int right)
+    {
+        if (left >= right)
+            return;
+
+        int mid = left + (right - left) / 2;
+        internalMergeSort(left, mid);
+        internalMergeSort(mid + 1, right);
+        merge(left, mid, right);
+    }
+
+    // ########## SEARCHING UTILITY FUNCTIONS ##########
+
 };
 
 #endif // DYNAMIC_ARRAY_HPP
