@@ -52,13 +52,14 @@ public:
             this->free();
         }
     }
-    
+
     // Warning: Deallocates the data buffer
     void free() {
-        if(NULL != data) {
+        if(NULL == data) return;
+
+        if (verbose)
             std::cout << "> Deallocating Dynamic Array" << std::endl;
-            delete[] data;
-        }
+        delete[] data;
     }
 
     // Copy constructor
