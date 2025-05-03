@@ -134,6 +134,22 @@ struct WordFrequency {
         frequency++;
     }
 
+    bool operator>(const WordFrequency& other) const {
+        return frequency > other.frequency;
+    }
+
+    bool operator>=(const WordFrequency& other) const {
+        return frequency >= other.frequency;
+    }
+
+    bool operator<(const WordFrequency& other) const {
+        return frequency < other.frequency;
+    }
+
+    bool operator<=(const WordFrequency& other) const {
+        return frequency <= other.frequency;
+    }
+
     friend std::ostream& operator<<(std::ostream& os, const WordFrequency& wordFrequency) {
       os << "Word: " << wordFrequency.word
          << ", Frequency: " << wordFrequency.frequency;
