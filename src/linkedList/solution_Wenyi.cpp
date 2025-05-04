@@ -134,11 +134,18 @@ void printMostFrequentWords(const LinkedList<WordFrequency>& wordFrequency, int 
     std::cout << "Most frequent words in 1-star reviews:\n";
     std::cout << "---------------------------------------\n";
 
+    int size = wordFrequency.getSize();
+    int startIndex = size - topN;
+    if (startIndex < 0) startIndex = 0;
+
     LinkedList<WordFrequency>::Iterator it = wordFrequency.iterator();
     int count = 0;
-    while (it.hasNext() && count < topN) {
+
+    while (it.hasNext()) {
         WordFrequency wf = it.next();
-        std::cout << wf.word << ": " << wf.frequency << "\n";
+        if (count >= startIndex) {
+            std::cout << wf.word << ": " << wf.frequency << "\n";
+        }
         count++;
     }
 
