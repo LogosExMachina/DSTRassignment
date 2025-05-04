@@ -52,17 +52,64 @@ public:
             this->free();
         }
     }
-    
+
     // Warning: Deallocates the data buffer
     void free() {
-        if(NULL != data) {
+        if(NULL == data) return;
+
+        if (verbose)
             std::cout << "> Deallocating Dynamic Array" << std::endl;
-            delete[] data;
+        delete[] data;
+    }
+
+    // Copy constructor
+    DynamicArray_Unsortable(const DynamicArray_Unsortable& other)
+        : data(nullptr), memorySize(0), virtualSize(0), // Initialize members
+          verbose(other.verbose), autoDealloc(other.autoDealloc)
+    {
+        if (verbose) std::cout << "> Copy Constructor called." << std::endl;
+
+        if (other.data == nullptr) return;
+
+        // Allocate memory of the same size as the source's *memorySize*
+        data = new T[other.memorySize];
+        memorySize = other.memorySize;
+        virtualSize = other.virtualSize;
+        // Copy the elements up to virtualSize
+        for (int i = 0; i < virtualSize; ++i) {
+            data[i] = other.data[i]; // Requires T to have operator=
         }
     }
 
+    // Copy assignment operator
+    DynamicArray_Unsortable& operator=(const DynamicArray_Unsortable& other) {
+        if (verbose) std::cout << "> Copy Assignment Operator called." << std::endl;
+
+        // Avoid self-assignment
+        if (this == &other) return *this;
+
+        // Copy members
+        free();
+        verbose = other.verbose;
+        autoDealloc = other.autoDealloc;
+        memorySize = other.memorySize;
+        virtualSize = other.virtualSize;
+
+        if (other.data == nullptr) {
+            data = nullptr;
+            return *this;
+        }
+
+        // Allocate new memory and copy the elements
+        data = new T[memorySize];
+        for (int i = 0; i < virtualSize; ++i) {
+            data[i] = other.data[i]; // Requires T to have operator=
+        }
+        return *this;
+    }
+
     bool wasInitialized() {
-        return  
+        return
             NULL != data &&
             0 < memorySize &&
             0 <= virtualSize;
