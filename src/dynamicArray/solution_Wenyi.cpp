@@ -94,6 +94,7 @@ DynamicArray_Unsortable<Review> loadReviews(const string& filename) {
 
 
 // merge sort
+// TODO implement in dynamicArray_unsortable.hpp
 template <typename T>
 DynamicArray_Unsortable<T> merge(DynamicArray_Unsortable<T>& left, DynamicArray_Unsortable<T>& right, bool (*cmp)(const T&, const T&)) {
     if (left.getSize() == 0) return right;
