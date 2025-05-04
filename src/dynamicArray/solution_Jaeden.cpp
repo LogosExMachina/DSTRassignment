@@ -146,7 +146,7 @@ int main() {
     
     
     // Task 2: Percentage of Electronics purchases by Credit Card
-    int catCol = 3, payCol = 5;
+    int catCol = 2, payCol = 5;
     electronicsCreditCardStats(transTable, catCol, payCol);
     
 
@@ -161,7 +161,7 @@ int main() {
     std::cout << "< Input anything to continue >" << std::endl;
     std::getchar();
     
-    analyze1StarReviews(reviewTable, 3, 4);
+    analyze1StarReviews(reviewTable, 2, 3);
     
     
     transTable.free();
