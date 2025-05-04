@@ -157,7 +157,7 @@ int main() {
     reviewTable = parser.parseCSV("data/reviews_cleaned.csv", revTypes, revStrLens, 4, 10);
     
 
-    // Task 3
+    // Task 3: Most Frequent Words in 1-Star Reviews
     std::cout << "< Input anything to continue >" << std::endl;
     std::getchar();
     
