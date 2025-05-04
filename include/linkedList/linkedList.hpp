@@ -283,44 +283,13 @@ private:
         if (b == nullptr) return a;
 
         // compare
-        if constexpr (std::is_same<T, Transaction>::value) {
-            Transaction& transA = static_cast<Node<Transaction>*>(a)->data;
-            Transaction& transB = static_cast<Node<Transaction>*>(b)->data;
-
-            std::tm timeA = transA.getDateAsTm();
-            std::tm timeB = transB.getDateAsTm();
-
-            time_t dateA = std::mktime(&timeA);
-            time_t dateB = std::mktime(&timeB);
-
-            if (dateA <= dateB) {
-                result = a;
-                result->next = merge(a->next, b);
-            } else {
-                result = b;
-                result->next = merge(a, b->next);
-            }
-        }
-
-        else if constexpr (std::is_same<T, WordFrequency>::value) {
-            WordFrequency& wfA = static_cast<Node<WordFrequency>*>(a)->data;
-            WordFrequency& wfB = static_cast<Node<WordFrequency>*>(b)->data;
-
-            if (wfA.frequency >= wfB.frequency) {
-                result = a;
-                result->next = merge(a->next, b);
-            } else {
-                result = b;
-                result->next = merge(a, b->next);
-            }
-        }
-
-        // TODO implement for other data types
-
-        else {
-            result = a;
-            result->next = merge(a->next, b);
-        }
+          if (a <= b) {
+              result = a;
+              result->next = merge(a->next, b);
+          } else {
+              result = b;
+              result->next = merge(a, b->next);
+          }
 
         return result;
     }
