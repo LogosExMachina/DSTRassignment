@@ -161,7 +161,7 @@ int main() {
     std::cout << "< Input anything to continue >" << std::endl;
     std::getchar();
     
-    analyze1StarReviews(reviewTable, 2, 3);
+    analyze1StarReviews(reviewTable, 3, 4);
     
     
     transTable.free();
