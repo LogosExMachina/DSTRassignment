@@ -7,7 +7,6 @@
 #include <string>
 #include <ctime>
 #include <iomanip>
-#include <type_traits>
 
 struct Transaction {
     std::string customerID;
@@ -165,8 +164,9 @@ template <typename T>
 struct Node {
     T data;
     Node* next;
+    Node* prev;
 
-    Node(const T& value) : data(value), next(nullptr) {}
+    Node(const T& value) : data(value), next(nullptr), prev(nullptr) {}
 };
 
 // linked list
@@ -188,10 +188,10 @@ public:
         Node<T>* newNode = new Node<T>(value);
 
         if (head == nullptr) {
-            head = newNode;
-            tail = newNode;
+            head = tail = newNode;
         } else {
             tail->next = newNode;
+            newNode->prev = tail;
             tail = newNode;
         }
 
@@ -279,7 +279,7 @@ public:
     }
 
 private:
-    // recursive merge sort helper function
+    // sorting helper functions
     Node<T>* mergeSortRecursive(Node<T>* node) {
         // base case: if list is empty or has only one element
         if (node == nullptr || node->next == nullptr) return node;
@@ -321,13 +321,13 @@ private:
         if (b == nullptr) return a;
 
         // compare
-          if (a->data <= b->data) {
-              result = a;
-              result->next = merge(a->next, b);
-          } else {
-              result = b;
-              result->next = merge(a, b->next);
-          }
+        if (a->data <= b->data) {
+            result = a;
+            result->next = merge(a->next, b);
+        } else {
+            result = b;
+            result->next = merge(a, b->next);
+        }
 
         return result;
     }
