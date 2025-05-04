@@ -6,13 +6,16 @@
 #include <cctype>
 #include <map>
 
-#include "csvParser.h"
-#include "dataTable.h"
-#include "date.hpp"
-#include "dynamicArray_sortable.hpp"
-#include "strUtils.h"
+#include "shared/csvParser.h"
+#include "shared/dataTable.h"
+#include "shared/date.hpp"
+#include "dynamicArray/dynamicArray_sortable.hpp"
+#include "shared/strUtils.h"
 
 using namespace std;
+
+CSVParser parser;
+DataTable transTable, reviewTable;
 
 // Convert date string to comparable Date
 Date parseDate(const std::string& dateStr) {
@@ -24,8 +27,8 @@ void bubbleSortByDate(DataTable& table, int dateCol) {
     int n = table.getnRows();
     for (int i = 0; i < n - 1; i++) {
         for (int j = 0; j < n - i - 1; j++) {
-            Date date1 = parseDate(table.getStringAt(dateCol, j));
-            Date date2 = parseDate(table.getStringAt(dateCol, j + 1));
+            Date date1 = stdStringToDate(table.getStringAt(dateCol, j));
+            Date date2 = stdStringToDate(table.getStringAt(dateCol, j + 1));
             if (date2 < date1) {
                 // Swap all column values of row j and j+1
                 for (int col = 0; col < table.getnCols(); col++) {
@@ -88,31 +91,81 @@ void analyze1StarReviews(DataTable& reviews, int ratingCol, int textCol) {
 }
 
 int main() {
-    CSVParser parser;
+
     parser.setVerbose(false);
 
     // Parse transactions
-    ColumnType transTypes[] = {ColumnType::STRING, ColumnType::STRING, ColumnType::DOUBLE,
-                               ColumnType::STRING, ColumnType::STRING, ColumnType::STRING};
-    int transStrLens[] = {20, 50, -1, 15, 20, 20};
-    DataTable transTable = parser.parseCSV("transactions.csv", transTypes, transStrLens, 6, 10000);
+    ColumnType transTypes[] = 
+        {ColumnType::STRING, ColumnType::STRING, ColumnType::STRING,
+        ColumnType::DOUBLE, ColumnType::STRING, ColumnType::STRING};
+
+    int transStrLens[] = {16, 32, 16, -1, 16, 32};
+    int nCols = sizeof(transTypes)/sizeof(ColumnType);
+
+    transTable = parser.parseCSV("data\\transactions_cleaned.csv", transTypes, transStrLens, nCols, 10);
+    std::cout <<
+    (transTable.wasInitialized()?
+    "> rawTransactions sucessfully initialized":
+    "> Error when initializing rawTransactions!")
+    << std::endl;
 
     // Task 1: Sort by date
-    int dateCol = 3; // index of date
-    bubbleSortByDate(transTable, dateCol);
+
+    int nRows = transTable.getnRows();
+
+    // Extract the transaction IDs and the dates as arrays
+    DynamicArray_Sortable<int> transacIdArr = DynamicArray_Sortable<int>();
+    DynamicArray_Sortable<Date> dateArr = DynamicArray_Sortable<Date>();
+
+    // Generate the transacId column
+    for(int i=0; i<nRows; i++) transacIdArr.pushBack(i);
+    
+    // Extract the 'Date' column from the DataTable
+    int dateCol = 4; // index of date
+    for(int i=0; i<nRows; i++) {
+        Date iDate = stdStringToDate(
+            transTable.getStringAt(dateCol, i)
+        );
+        //std::cout << "> Date [" << i << "] = " << iDate << std::endl;
+        dateArr.pushBack(iDate);
+    }
+    
+    dateArr.bubblesort();
+
+    std::cout << "Transactions sorted by ID:" << std::endl;
+    std::cout << "| ID |  DATE  |" << std::endl;
+    for(int i=0; i<nRows; i++) {
+        std::cout << "| " << transacIdArr.getAt(i) << " | "
+        << dateArr.getAt(i).getAsString() << " |" << std::endl;
+    }
+
     cout << "\nTotal Transactions (Array): " << transTable.getnRows() << endl;
 
-    // Task 2
-    int catCol = 4, payCol = 5;
+    std::cout << "< Input anything to continue >" << std::endl;
+    std::getchar();
+    
+    
+    // Task 2: Percentage of Electronics purchases by Credit Card
+    int catCol = 2, payCol = 5;
     electronicsCreditCardStats(transTable, catCol, payCol);
+    
 
     // Parse reviews
+    
     ColumnType revTypes[] = {ColumnType::STRING, ColumnType::STRING, ColumnType::INT, ColumnType::STRING};
     int revStrLens[] = {20, 20, -1, 200};
-    DataTable reviewTable = parser.parseCSV("reviews.csv", revTypes, revStrLens, 4, 10000);
+    reviewTable = parser.parseCSV("data/reviews_cleaned.csv", revTypes, revStrLens, 4, 10);
+    
 
     // Task 3
+    std::cout << "< Input anything to continue >" << std::endl;
+    std::getchar();
+    
     analyze1StarReviews(reviewTable, 2, 3);
+    
+    
+    transTable.free();
+    reviewTable.free();
 
     return 0;
 }
