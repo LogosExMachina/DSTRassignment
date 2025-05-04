@@ -226,7 +226,41 @@ public:
         return current->data;
     }
 
-    // merge sort implementation for linked list
+    // sorting algorithms
+    void bubbleSort() {
+        if (head == nullptr) return;
+
+        bool swapped = true; // set to true to enter the loop
+        while (swapped) { // no swaps means sorted
+            swapped = false;
+            Node<T>* current = head;
+
+            while (current->next != nullptr) {
+                if (current->data > current->next->data) {
+                    std::swap(current->data, current->next->data);
+                    swapped = true;
+                }
+                current = current->next;
+            }
+        }
+    }
+
+    void insertionSort() {
+        if (!head || !head->next) return;
+
+        Node<T>* i = head->next;
+        while (i) {
+            Node<T>* j = head;
+            while (j != i) {
+                if (j->data > i->data) {
+                    std::swap(j->data, i->data);
+                }
+                j = j->next;
+            }
+            i = i->next;
+        }
+    }
+
     void mergeSort() {
         head = mergeSortRecursive(head);
 
@@ -238,6 +272,10 @@ public:
             }
             tail = current;
         }
+    }
+
+    void quickSort() {
+        quickSortRecursive(head, nullptr);
     }
 
 private:
@@ -283,7 +321,7 @@ private:
         if (b == nullptr) return a;
 
         // compare
-          if (a <= b) {
+          if (a->data <= b->data) {
               result = a;
               result->next = merge(a->next, b);
           } else {
@@ -292,6 +330,26 @@ private:
           }
 
         return result;
+    }
+
+    void quickSortRecursive(Node<T>*& start, Node<T>* end) {
+        if (start == end || start == nullptr || start->next == end) return;
+
+        Node<T>* pivot = start;
+        Node<T>* current = start->next;
+        Node<T>* prev = start;
+
+        while (current != end) {
+            if (current->data < pivot->data) {
+                prev = prev->next;
+                std::swap(prev->data, current->data);
+            }
+            current = current->next;
+        }
+
+        std::swap(start->data, prev->data);
+        quickSortRecursive(start, prev);
+        quickSortRecursive(prev->next, end);
     }
 
 public:
