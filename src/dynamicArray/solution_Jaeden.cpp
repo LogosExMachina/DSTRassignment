@@ -146,7 +146,7 @@ int main() {
     
     
     // Task 2: Percentage of Electronics purchases by Credit Card
-    int catCol = 2, payCol = 5;
+    int catCol = 3, payCol = 5;
     electronicsCreditCardStats(transTable, catCol, payCol);
     
 
